@@ -1,0 +1,38 @@
+﻿<div class="test-item__container_option bg-color-8 color-2" style=@($"{Style} border-bottom: none;")>
+	<ul>
+		@foreach (var i in SelectedQuestion.Options.OrderBy(x => x.TenantId))
+		{
+			<li>
+				<div class="form-check form-switch ">
+					@if (!IsTestMode)
+					{
+						<input class="form-check-input bg-color-2" type="checkbox" checked="@i.IsTrue" disabled id="question-option-2" @onchange="EventArgs => { OnOptionChanged(i, EventArgs.Value); }">
+					}
+					else if (IsOptionsSlectable)
+					{
+						<input class="form-check-input bg-color-2" type="checkbox" disabled checked="@IsOptionChecked(SelectedQuestion, i.TenantId)" id="question-option-2" @onchange="EventArgs => { OnOptionChanged(i, EventArgs.Value); }">
+					}
+					else
+					{
+						<input class="form-check-input bg-color-2" type="checkbox" checked="@IsOptionChecked(SelectedQuestion, i.TenantId)" id="question-option-2" @onchange="EventArgs => { OnOptionChanged(i, EventArgs.Value); }">
+					}
+				</div>
+				<p>@((MarkupString)i.Content)</p>
+			</li>
+		}
+
+	</ul>
+</div>
+
+
+@code {
+	
+	[Parameter] public QUestionSql SelectedQuestion { get; set; }
+	[Parameter] public bool IsTestMode { get; set; }
+	[Parameter] public bool IsOptionsSlectable { get; set; }
+	[Parameter] public string Style { get; set; } = "border-style: solid; border-width: 1px;";
+	[Parameter] public Func<QUestionSql, string, bool> IsOptionChecked { get; set; }
+	[Parameter] public Action<QuestionOption<int>,object> OnOptionChanged { get; set; }
+
+
+}

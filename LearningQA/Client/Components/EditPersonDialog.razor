@@ -1,0 +1,92 @@
+﻿@using LearningQA.Shared.DTO
+@inject IPersonInfoPersist PersonInfoPersist
+@inject IPersonInfoModel PersonInfoModel
+<a @onclick="OnShow" class="ml-md-auto">Persons</a>
+@if (Show && PersonInfoPersist.Persons != null &&  PersonInfoPersist.SelectedPerson != null )
+{
+
+	<div class="modal" style="display:block;">
+	 <div class="modal-dialog">
+	  <div class="modal-content">
+	   <div class="modal-header">
+		<h4 class="modal-title">Person Editor For </h4>
+		<button type="button" class="close" @onclick="@ModalClose">&times;</button>
+	   </div>
+	   <UserSelect OnSelectionChange="OnSelectionChanged" SelectedPerson="PersonInfoPersist.SelectedPerson" Persons="PersonInfoPersist.Persons"  />
+	   <div class="modal-body">
+		<EditForm Model="Person" OnValidSubmit="ModalOk" OnInvalidSubmit="HandleInvakidSubmit" >
+		 <DataAnnotationsValidator />
+		 <ValidationSummary/>
+		 <p><label>IdNumber:</label></p>
+		 <p><InputText @bind-Value=Person.IdNumber /></p>
+		 <p><label>Name:</label></p>
+		 <p> <InputText @bind-Value="Person.Name" /></p>>
+		 <p><label>Phone:</label></p><p> <InputText @bind-Value="Person.Phone" /></p>
+		 <p><label>Address: </label></p><p><InputText @bind-Value="Person.Address" /></p>
+		 <p><label>Email: </label></p><p><InputText @bind-Value="Person.Email" /></p>
+		 <p><label>Password: </label></p><p><InputText @bind-Value="Person.Password" /></p>
+		 <p><button type="submit" class="btn btn-primary" >Save</button></p>
+		 <div class="modal-footer">
+		<button type="button" class="btn btn-alert" @onclick="ModalAdd">Add</button>
+		
+		<button type="button" class="btn btn-secondary" @onclick="@ModalClose">Cancel</button>
+	   </div>
+		</EditForm>
+
+	   </div>
+
+	  </div>
+	 </div>
+	</div>
+}
+
+
+@code {
+	[Parameter] public PersonInfoDto Person { get; set; }
+	[Parameter] public EventCallback<bool> OnClose { get; set; }
+	[Parameter] public bool Show { get; set; } = false;
+	protected override async Task OnInitializedAsync()
+	{
+		if (PersonInfoPersist.Persons is null)
+		{
+			await PersonInfoModel.InitializeAsync();
+			Person = PersonInfoPersist.SelectedPerson;
+			Person.IsChanged = true;
+		}
+		await base.OnInitializedAsync();
+		return;
+	}
+	private async Task HandleValidSubmit()
+	{
+
+	}
+	private async Task HandleInvakidSubmit()
+	{ }
+	private async Task OnSelectionChanged(int selection)
+	{
+		Person = PersonInfoPersist.Persons.Where(x => x.Id == selection).FirstOrDefault();
+		Person.IsChanged = true;
+		StateHasChanged();
+	}
+	private void OnShow()
+	{
+		Show = !Show;
+	}
+	private void ModalAdd()
+	{
+		Person = new PersonInfoDto();
+		Person.IsChanged = true;
+		PersonInfoModel.AddPersonInfoAsync(Person);
+	}
+	private void ModalClose()
+	{
+		Show = false;
+
+	}
+	private async Task  ModalOk()
+	{
+		Show = false;
+		await PersonInfoModel.SaveAsync();
+
+	}
+}

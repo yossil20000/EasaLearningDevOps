@@ -1,0 +1,20 @@
+﻿
+@inject ExamViewModelPersist ExamViewModelPersist
+<select  @bind="ExamViewModelPersist.GetExamQuestionFilter" class="bg-color3 color-8" style="width:100%;margin: 2px 0px 2px 2px;min-width: 0;height: 100%;">
+	
+	@foreach(var filter in Enum.GetValues(typeof(QuestionListFilter)))
+	{
+		<option value="@filter" >@filter</option>
+		@*<option value="@filter" selected="@(--selectedIndex == -1 ? "selected" : null)">@filter</option>*@
+		@if("All" != Enum.GetName(typeof(QuestionListFilter),filter).ToString())
+		{
+			
+		}		 
+	}
+	@*<option selected="selected" value="@Enum.GetName(typeof(QuestionListFilter),QuestionListFilter.All)" >All</option>*@
+</select>
+
+@code {
+	private int selectedIndex = 0;
+	
+}

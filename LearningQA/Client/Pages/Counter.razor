@@ -1,0 +1,134 @@
+﻿@page "/counter"
+@using LearningQA.Client.Components
+@using YLBlazor
+@inject ExampleJsInterop ExampleJs
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<h2>From YLBlazor</h2>
+<YLBlazor.Component1/>
+@ExampleJs.Prompt("Hii From YLBlazor")
+<TabControl>
+    <TabTextTemplate>
+        Hello
+    </TabTextTemplate>
+    @*Another way to use the context to pass value*@
+    @*You can change the default context name to avoid conflict*@
+    <TabTextTemplate Context="otherName">
+        <input type="checkbox" /> @otherName.Text
+    </TabTextTemplate>
+    @* Good for one renderFragmant
+        More Then On wee need toCreate Elemnet
+        <TabPage Text="Tab 1">
+        <h1>The first Tab</h1>
+    </TabPage>
+    <TabPage Text="Tab 2">
+        <h1>The Second Tab</h1>
+    </TabPage>
+    <TabPage >
+        <h1>The Third tab</h1>
+    </TabPage>*@
+    <ChildContent>
+        <TabPage Text="Tab 1">
+            <h1>The first Tab</h1>
+        </TabPage>
+        <TabPage Text="Tab 2">
+            <h1>The Second Tab</h1>
+        </TabPage>
+        <TabPage>
+            <h1>The Third tab</h1>
+        </TabPage>
+    </ChildContent>
+</TabControl>
+
+
+<YLDataList Data="@People" Context="item">
+    @item.Id @item.IdNumber @item.Name @item.Email
+</YLDataList>
+
+@*Explicit supply the TItem Param type*@
+<YLDataList TItem="Person<int>" Data="@People" Context="item">
+    @item.Id @item.IdNumber @item.Name @item.Email 
+</YLDataList>
+
+
+<YLDataList Data="@People" Context="item">
+    <ChildContent>
+        <ul>
+            <li @key="item"> @item.Id @item.IdNumber @item.Name @item.Email</li>
+        </ul>
+        
+    </ChildContent>
+</YLDataList>
+
+<DataListRenderFragment Data="@People">
+    <ItemTemplate>
+        <li @key="context.Id">@context.Id @context.IdNumber @context.Email</li>
+    </ItemTemplate>
+</DataListRenderFragment>
+
+<DataListRenderFragment Data=@People>
+    <ListTemplate Context="listOfPeople">
+        <table class="table bg-color-9">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>IdNumber</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @listOfPeople
+            </tbody>
+        </table>
+    </ListTemplate>
+    <ItemTemplate Context="person">
+        <tr @key=@person.Id>
+            <td>@person.Id</td>
+            <td>@person.IdNumber</td>
+            <td>@person.Email</td>
+        </tr>
+    </ItemTemplate>
+</DataListRenderFragment>
+
+<DataListRenderFragment Data="@People">
+
+</DataListRenderFragment>
+
+
+<button type="button" @onclick="@ShowDialog">Show Dialog</button>
+@if(bShowDialog)
+{
+    <div>Yossi</div>
+    <div class="modal modal-fullscreen-sm-down" tabindex="-1" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"  @onclick="CloseDialog"></button>
+      </div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+@code{
+    private bool bShowDialog = true;
+    private void ShowDialog()
+    {
+        bShowDialog = !bShowDialog;
+    }
+    private void CloseDialog()
+    {
+        bShowDialog = false;
+    }
+}

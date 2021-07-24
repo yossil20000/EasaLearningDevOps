@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+@inject LearningQA.Client.ViewModel.TestItemViewModelPersist TestItemViewModelPersist
+
+<div class="page">
+    <div class="sidebar bg-color-7 color-2">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="bg-color-7 color-2 top-row px-4 auth">
+			<div style="display:flex;justify-content: space-around;gap: 5px;align-items: center;justify-items: center;">
+			<div>@($"Remain: {TestItemViewModelPersist.CountDownRemain.ToString()}")</div>
+		</div>
+            <div style="display:flex;justify-content: space-around;gap: 5px;align-items: center;justify-items: center;">
+			<LearningQA.Client.Components.EditPersonDialog/>
+            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>				
+			</div>
+
+        </div>
+
+        <div >
+            @Body
+        </div>
+    </div>
+</div>
+@code{
+    	bool IsRegistered = false;
+		protected override void OnAfterRender(bool firstRender)
+		{
+			if(!IsRegistered)
+			{
+				TestItemViewModelPersist.OnChanged(() => base.StateHasChanged());
+				IsRegistered = true;
+			}
+			base.OnAfterRender(firstRender);
+		}
+		
+
+		public void Dispose()
+		{
+			if (IsRegistered)
+				TestItemViewModelPersist.OnUnChanged(() => base.StateHasChanged());
+		}
+}

@@ -1,0 +1,84 @@
+﻿@typeparam TRowData
+@using System.Linq.Expressions
+@using Humanizer
+<CascadingValue Value="this">@ChildContent</CascadingValue>
+
+@code {
+    [CascadingParameter]
+    public YLGrid<TRowData> OwnerGrid { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> GroupAttributes { get; set; }
+    [Parameter]
+    public string GroupClass { get; set; }
+    private List<YLGridColumn<TRowData>> Columns { get; set; } = new List<YLGridColumn<TRowData>>();
+    RenderFragment groupHeaderTemplete;
+    RenderFragment<TRowData> groupCellTemplate;
+    private string groupClass = "attribute__container";
+    protected override void OnParametersSet()
+    {
+        groupCellTemplate = item => @:@{
+                
+                <div class=@GroupCellClass()>
+                    @foreach (YLGridColumn<TRowData> column in Columns)
+                    {
+                        if (column.CellTemplate == null)
+                        {
+
+                        }
+                        else
+                        {
+                            @column.CellTemplate(item)
+                        }
+
+                    }
+
+                </div>
+            }
+            ;
+            }
+            internal string GroupCellClass()
+            {
+                return $"{groupClass} {GroupClass}";
+            }
+            internal RenderFragment<TRowData> GroupCellTemplate
+            {
+                get
+                {
+                    return groupCellTemplate;
+
+                }
+            }
+
+
+            internal RenderFragment GroupHeaderTemplate
+            {
+                get
+                {
+
+                    return groupHeaderTemplete = @:@{
+                
+            <div class=@GroupCellClass() >
+                @foreach (YLGridColumn<TRowData> column in Columns)
+                {
+                    @column.HeaderTemplate
+                }
+            </div>
+            }
+            ;
+        }
+    }
+                /// <summary>
+                /// 
+                /// </summary>
+    protected override void OnInitialized()
+    {
+        OwnerGrid.AddGroup(this);
+
+    }
+
+    public void AddColumn(YLGridColumn<TRowData> column)
+    {
+        Columns.Add(column);
+    }
+}

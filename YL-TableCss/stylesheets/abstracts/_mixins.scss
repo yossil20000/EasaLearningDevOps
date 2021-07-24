@@ -1,0 +1,161 @@
+@use sass:string;
+// -----------------------------------------------------------------------------
+// This file contains all application-wide Sass mixins.
+// -----------------------------------------------------------------------------
+
+/// Event wrapper
+/// @author Harry Roberts
+/// @param {Bool} $self [false] - Whether or not to include current selector
+/// @link https://twitter.com/csswizardry/status/478938530342006784 Original tweet from Harry Roberts
+@mixin on-event($self: false) {
+  @if $self {
+    &,
+    &:hover,
+    &:active,
+    &:focus {
+      @content;
+    }
+  } @else {
+    &:hover,
+    &:active,
+    &:focus {
+      @content;
+    }
+  }
+}
+
+/// Make a context based selector a little more friendly
+/// @author Hugo Giraudel
+/// @param {String} $context
+@mixin when-inside($context) {
+  #{$context} & {
+    @content;
+  }
+}
+//Yossi changes
+//Add index to grid area
+@mixin add-index-grid-area($area-name,$area-prefix,$area-index){
+  .#{$area-name}#{$area-prefix}#{$area-index}{
+    display: grid;
+    width: 100%;
+    grid-area: #{$area-name}#{$area-prefix}#{$area-index};
+    align-items: center;
+   justify-items: center;
+  }
+}
+
+
+///Make css property with css Variable with fallback
+@mixin variable($property,$variable,$fallback) {
+  #{$property}: $fallback;
+  #{$property}: var($variable);
+  
+}
+
+//Make variable with calc
+@mixin calc-var($property,$init ,$index,$variable) {
+  @if($index == 1)
+  {
+  #{$property}-0: $init;
+  }
+   
+   $PrevIndex: $index - 1;
+  #{$property}-#{$index}: calc(var(#{$property}-#{$PrevIndex})  + var( #{$variable}));
+}
+
+@mixin data-theme($selector , $index) {
+ [data-theme="#{$selector}-#{$index}"] {
+    @if($index == 1)
+    {
+      --hue: var(--first-hue); // 180
+    }
+    @else
+    {
+      --hue: calc(var(--first-hue) + calc(var(--hue-step) * #{$index}));
+    }
+     
+     
+    }
+}
+
+@mixin theme-colors($class,$property,$lgt ,$index) {
+
+  .#{$class}-#{$index} {
+    // --hue-percent: calc($hue-percent * 1%);
+    #{$property}: hsl(var(--hue), var(--hue-percent) ,var(#{$lgt}-#{$index}));
+  }
+}
+
+@mixin them-bg-image($class,$lgt-start,$lgt-end) {
+  .#{$class}--#{$lgt-start}-#{$lgt-end}{
+    background-image: linear-gradient(180deg, hsl(var(--hue), var(--hue-percent), var(--lgt-#{$lgt-start})) 0%, hsl(var(--hue), var(--hue-percent), var(--lgt-#{$lgt-end})) var(--bg-image-linear-stop));
+  }
+}
+
+@mixin  CssParam ($class,$param,$value,$unit){
+  .#{$class}-#{$value}
+  {
+    --#{$param}: #{$value}#{$unit};
+  }
+}
+@mixin  CssParamWithIndex ($class,$param,$index,$value,$unit){
+  :#{$class}
+  {
+    --#{$param}-#{$index}: #{$value}#{$unit};
+  }
+  
+}
+@mixin  CssClass2CssParam ($class,$param,$index,$value,$unit){
+  .#{$param}-#{$index}-#{$value}{
+    --#{$param}-#{$index}: #{$value}#{$unit};
+  }
+}
+
+
+/*
+fluid-type from  CSS-tricks (Mike)
+*/
+@mixin fluid-type($properties, $min-vw, $max-vw, $min-value, $max-value) {
+  & {
+    @each $property in $properties {
+      #{$property}: $min-value;
+    }
+
+    @media screen and (min-width: $min-vw) {
+      @each $property in $properties {
+        #{$property}: calc(#{$min-value} + #{strip-unit($max-value - $min-value)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+      }
+    }
+
+    @media screen and (min-width: $max-vw) {
+      @each $property in $properties {
+        #{$property}: $max-value;
+      }
+    }
+  }
+}
+
+/* Define break points*/
+$screen-size:(
+  "mobile": 480px,
+  "tablet": 768px,
+  "desktop": 1440px, 
+);
+
+//Defining our conditional Media query Mixin
+
+@mixin media-query($screen) {
+  @each $key,$value in $screen-size {
+    //define max-size
+    @if($screen == $key){
+      @media screen and (max-width : $value) {
+        @content
+      };
+    }
+  }
+}
+@mixin media-query-property-min($value, $media-property, $media-value) {
+  @media screen and (min-width : $value) {
+    $media-property: $media-value;
+  };
+}

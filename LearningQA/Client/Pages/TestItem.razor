@@ -1,0 +1,297 @@
+﻿
+@page "/testitem/{testItemId:int?}"
+@page "/testitem/test/{testId:int}"
+@inject LearningQA.Client.ViewModel.TestItemViewModelPersist ViewModelPersist
+
+@using System.Net
+@using LearningQA.Client.Components
+
+<div class="bg-color-6 color-6">
+    <div class="test-item__container bg-color-7 color-2">
+        <header class="test-item__container_header current__theme-bg-image--7-9" style="display: flex;align-items: center;">
+            <label>Person: </label>
+            <UserSelect Persons="personInfoPersist.Persons" SelectedPerson="personInfoPersist.SelectedPerson"/>
+            <label for="isLearningMode" style="text-align: center;justify-self: center;">Is Learning Mode</label>
+            <input type="checkbox" id="isLearningMode" title="Is Learning" @bind-value="ViewModelPersist.IsLearningMode"/>
+        </header>
+        <div class="test-item__container_aside-header current__theme-bg-image--7-9">
+            <div>Questions</div>
+        </div>
+        @if (ViewModelPersist != null)
+        {
+            <EditForm class="test-item__container_selection" Model="ViewModelPersist">
+                <TestItemSelects TestItemViewModelPersist="ViewModelPersist" OnLoadCommand="testItemViewModel.OnLoadCommand" ButtonTitle="New Test"/>
+            </EditForm>
+
+        }
+        else
+        {
+            <div>
+                Inititalzed In Process
+            </div>
+        }
+        @if (ViewModelPersist.CurrentTest != null && ViewModelPersist.SelectedQuestion != null && ViewModelPersist.SelectedQuestion.Options != null)
+        {
+
+            <div class="test-item__container_question bg-color-8 color-2" style=@($"{border} border-bottom: none;")>
+                @if (ViewModelPersist.SelectedQuestion != null)
+                {
+                    <h5>Question: @ViewModelPersist.SelectedQuestion.QuestionNumber</h5>
+                    <p style="line-height: 2.5ch">@((MarkupString)ViewModelPersist.SelectedQuestion.Question)</p>
+                }
+            </div>
+            <AnswareOption SelectedQuestion="ViewModelPersist.SelectedQuestion" IsTestMode="true" IsOptionsSlectable="@(ViewModelPersist.ExamState != ExamState.ExamStart)" OnOptionChanged="ViewModelPersist.OnOptionChanged" IsOptionChecked="IsOptionChecked" />
+                
+           
+            <div class="test-item__container_nav">
+                <button class=@($"nav-1 bg-color-7 color-2 {(ViewModelPersist.EnablePreviouse ? "" : "disabled")}") @onclick="ViewModelPersist.OnPrevious">Previous</button>
+                <div class="nav-2">Q</div>
+                <input type="number" max=@(ViewModelPersist.CurrentTest.Answers.Count) min="1" class="nav-3 bg-color-7 color-2" value=@(ViewModelPersist.CurrentQuestion) @onchange="ChangeEventArgs => { ViewModelPersist.OnChangeQuestionNumber(ChangeEventArgs); }">
+                <!-- <div class="nav-4"></div> -->
+                <button class=@($"nav-5 bg-color-7 color-2 {(ViewModelPersist.EnableNext ? "" : "disabled")}" ) @onclick="ViewModelPersist.OnNext">Next</button>
+                <!-- <div style="width: 2px;"></div> -->
+                @if (ViewModelPersist.ExamState == ExamState.ExamCreate)
+                {
+                    <button class=" bg-color-7 color-2 nav-7" @onclick="testItemViewModel.OnStartTest">Start Test</button>
+                }
+                else if (ViewModelPersist.ExamState == ExamState.ExamStart)
+                {
+                    <button class=" bg-color-7 color-2 nav-7" @onclick="testItemViewModel.OnFinishTest">Finish</button>
+                }
+                else if (ViewModelPersist.ExamState == ExamState.ExamFinished)
+                {
+                    <button class=" bg-color-7 color-2 nav-7" @onclick="testItemViewModel.OnCheckTest">Check</button>
+                }
+                else if (ViewModelPersist.ExamState == ExamState.ExamResultReady)
+                {
+                    <div class=" bg-color-7 color-2 nav-7" style="display: flex; flex-direction: row">
+                        <button class=" bg-color-7 color-2 " @onclick="OnSaveTest" style="width:100%;">Save</button>
+                        @if(IsSaving || !IsSavingSucceed)
+                        {
+                            <div class="spinner-grow text-primary" role="status"></div>
+                        }
+                    </div>
+                }
+                else if(ViewModelPersist.ExamState == ExamState.ExamSaved)
+                {
+                    <button class=" bg-color-7 color-2 nav-7 disabled" >Saved</button>
+                }
+                else if(ViewModelPersist.ExamState == ExamState.ExamSaveFailed)
+                {
+                    <button class=" bg-color-7 color-2 nav-7 disabled" >FAILED </button>
+                }
+                
+            </div>
+
+            <aside class="test-item__container_aside bg-color-5 color-2">
+
+                <button type="button" class="bg-color3 color-8" style="position: absolute" @onclick="OnMarkCurrentQuestion">Mark</button>
+                <div class="question-list color-5 bg-color-2">
+                    <ul>
+                        @if (IsTestMode && ViewModelPersist.ExamState >= ExamState.ExamCreate)
+                        {
+                            @foreach (var answer in ViewModelPersist.CurrentTest.Answers)
+                            {
+                                <li class="question-list_item">
+                                    <div class=@($"legend-icon{(answer.IsAnswered ? "_answered" : "")}")></div>
+                                    @*<div class=@($"legend-icon{(answer.IsMarked ? "_marked" : "")}")></div>*@
+                                    <div class=@($"{(answer.IsCorrect ? "bg-color-10" : "")}")>@answer.QUestionSql.QuestionNumber</div>
+                                    <div class=@($"legend-icon{(answer.IsMarked ? "_marked" : "")}")></div>
+                                    @if (answer.IsSelected)
+                                    {
+                                        <input type="checkbox" title="Remove From Current Test" checked @onchange="ChangeEventArgs => { ViewModelPersist.OnQuestionIsSelected(answer.QUestionSql.Id, ChangeEventArgs); }" />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" title="Remove From Current Test" @onchange="ChangeEventArgs => { ViewModelPersist.OnQuestionIsSelected(answer.QUestionSql.Id, ChangeEventArgs); }" />
+                                    }
+
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            @foreach (var answer in ViewModelPersist.CurrentTest.Answers)
+                            {
+                                <li class="question-list_item">
+                                    <div class=@($"legend-icon{(answer.IsAnswered ? "_answered" : (answer.IsMarked ? "_marked" : ""))}")></div>
+                                    <div>@answer.QUestionSql.QuestionNumber</div>
+                                    <div class=@($"legend-icon{(answer.IsMarked ? "_marked" : "")}")></div>
+                                    @if (answer.IsSelected)
+                                    {
+                                        <input type="checkbox" title="Remove From Current Test" checked @onchange="ChangeEventArgs => { ViewModelPersist.OnQuestionIsSelected(answer.QUestionSql.Id, ChangeEventArgs); }" />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" title="Remove From Current Test" @onchange="ChangeEventArgs => { ViewModelPersist.OnQuestionIsSelected(answer.QUestionSql.Id, ChangeEventArgs); }" />
+                                    }
+
+                                </li>
+                            }
+                        }
+
+
+                    </ul>
+                </div>
+
+            </aside>
+            <div class="test-item__container_answer">
+                <p class=@($"{(answereExpend ? "" : "visually-hidden")}") id="answer">
+                    <ul>
+                        @if (ViewModelPersist.SelectedQuestion != null)
+                        {
+                            foreach (var answerOption in ViewModelPersist.SelectedQuestion.Options.Where(x => x.IsTrue))
+                            {
+                                <li>
+                                    @($"{answerOption.TenantId} , {answerOption.IsTrue}")
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                </p>
+            </div>
+
+        }
+    <div class=@($"test-item__container_supplement {(supplementExpand ? "" : "expande")} {(supplementFullExpand ? "" : "full-expande")} bg-color-9 color-2")>
+        <div class="operation">
+            <div id="container_supplement" class=@($"{(supplementExpand ? "toggle" : "toggle active")}") @onclick="OnSupplementExpandToggle"></div>
+            <div id="container_supplement" class=@($"{(supplementFullExpand ? "toggle-full" : "toggle-full active")}") @onclick="OnSupplementFullExpandToggle"></div>
+            <button @onclick="ClearCanvas">Clear</button>
+            <button @onclick="NewLine">New Line</button>
+            @if (ViewModelPersist.SelectedQuestion != null && ViewModelPersist.SelectedQuestion.Supplements != null)
+            {
+                    @for (var supp =0; supp < ViewModelPersist.SelectedQuestion.Supplements.Count();supp++)
+                {
+                        var id = ViewModelPersist.SelectedQuestion.Supplements.ElementAt(supp).Id;
+                        <button @onclick=@(() => SelectedImage(id))>@ViewModelPersist.SelectedQuestion.Supplements.ElementAt(supp).Title</button>
+                }
+            }
+
+        </div>
+        @if (ViewModelPersist.SelectedQuestion != null && ViewModelPersist.SelectedQuestion.Supplements != null)
+        {
+            
+            @if(ViewModelPersist.SelectedSupplement != null && RenderSupp())
+            {
+                <div class="content" style="position:relative">
+                    <img id="canvasImgTestItem" @onchange="OnImageDoubleClick" class=@(ViewModelPersist.SelectedSupplement.RotateContent == 0  ? "contain" :  $"contain rotate90") src=@($"data:image/jpeg;base64,{ViewModelPersist.SelectedSupplement.Content}") alt="base64 test" style="width:100%; display:none">
+                    <canvas id="canvasTestItem" class="canvas" @onmousemove="@(eventArg => CanvasOnMoseMove(eventArg) )" @onmousedown="@(eventArg => CanvasMousedown(eventArg) )" @onmouseup="@(eventArg => CanvasMouseUp(eventArg) )"></canvas>
+                </div>
+
+            }
+        }
+
+
+    </div>
+        @*aside-summary*@
+        <div class="test-item__container_aside-summary bg-color-6 color-2">
+            @if (IsTestMode && ViewModelPersist.CurrentTest.Answers != null && ViewModelPersist.ExamState >= ExamState.ExamCreate)
+            {
+
+                <div>Answered</div>
+                <div>@(ViewModelPersist.CurrentTest.Answers.Where(x => x.IsAnswered).Count())</div>
+                <div>Wrong</div>
+                <div>@(ViewModelPersist.CurrentTest.Answers.Where(x => !x.IsCorrect).Count())</div>
+
+                <div>Remained</div>
+                <div>@(ViewModelPersist.CurrentTest.Answers.Count() - ViewModelPersist.CurrentTest.Answers.Where(x => x.IsAnswered).Count())</div>
+                <div>Mark</div>
+                <div>@ViewModelPersist.CurrentTest?.Mark</div>
+            }
+        </div>
+
+
+        @*answer-expend*@
+        <div class="test-item__container_answer-expend bg-color-8 color-2" style=@($"{border}")>
+
+            <div id="show-answers" class=@($"{(answereExpend ? "toggle active" : "toggle")}") @onclick="OnAnswerExpandToggle"></div>
+            <div>Show / Hide</div>
+        </div>
+
+
+
+        @*aside-legend*@
+        <div class="test-item__container_aside-legend bg-color-5 color-2">
+
+            <div class="legend-icon_answered"></div>
+            <div>Answered</div>
+            <div class="legend-icon_wrong"></div>
+            <div>Wrong</div>
+            <div class="legend-icon_marked"></div>
+            <div>Marked</div>
+        </div>
+        @*<footer class="test-item__container_footer">Footer</footer>*@
+    </div>
+</div>
+
+@code {
+    string border = "border-style: solid; border-width: 1px;";
+    private async Task OnImageDoubleClick()
+    {
+        try
+        {
+            _ = await canvasClassJsInterop.UpdateImage("canvasTestItem", "canvasImgTestItem");
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+    }
+@*    private async void SelectedImage(int id)
+    {
+        ViewModelPersist.SelectedSupplement = ViewModelPersist.SelectedQuestion.Supplements.Where(x => x.Id == id).FirstOrDefault();
+        
+        await canvasJsInterop.ClearDraw();
+        await canvasJsInterop.ClearCanvas(false);
+        bImageChanged = true ;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }*@
+
+    private async Task SelectedImage(int id)
+    {
+        Console.WriteLine($"SelectedImage  Id : {id} ");
+        await canvasClassJsInterop.ClearDraw("canvasTestItem");
+         ViewModelPersist.SelectedSupplement = ViewModelPersist.SelectedQuestion.Supplements.ToList().Where(x => x.Id == id).FirstOrDefault();
+        ViewModelPersist.SelectedQuestion.Supplements.ToList().ForEach(x => Console.WriteLine($"{x.Id} {x.Title}"));
+        Console.WriteLine($"SelectedImage  Id : {id} {ViewModelPersist.SelectedSupplement.Id} Tittle:{ViewModelPersist.SelectedSupplement.Title} Size:{ViewModelPersist.SelectedSupplement.Content.Length} Num:{ViewModelPersist.SelectedQuestion.Supplements.Count()} ");
+        
+        bImageChanged = true ;
+		StateHasChanged();
+        await Task.CompletedTask;
+    }
+    bool IsSaving = false;
+    bool IsSavingSucceed = false;
+    private async Task OnSaveTest()
+    {
+        IsSaving = true;
+         
+        StateHasChanged();
+        try
+        {
+           var response =  await testItemViewModel.OnSaveCurrentExam();
+           if(response.IsSucced)
+            {
+                 IsSaving = false;
+                 IsSavingSucceed = true;
+            }
+            else
+            {
+                Console.WriteLine($"OnSaveTest Failed {response.Message}");
+            }
+        }
+        catch(Exception ex)
+        {
+            IsSavingSucceed = false;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+           
+            StateHasChanged();
+        }
+    }
+    @*@onchange="ChangeEventArgs => { ViewModelPersist.OnChangeQuestionNumber(ChangeEventArgs.Value.ToString()); }"*@
+}

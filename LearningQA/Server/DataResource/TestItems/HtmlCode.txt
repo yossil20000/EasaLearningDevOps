@@ -1,0 +1,53 @@
+﻿<p></p>
+<p></p><p></p>
+<p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Diagram.5.5.1",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.9.20\\AppendixA.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
+src-relative:DataResource\\TestItems\\CAP697JPG\\
+
+√	8730	221A	&radic;	SQUARE ROOT
+°C	&#8451;	&#x2103	 	DEGREE CELSIUS
+° &#176; &deg; \u00B0  Degree
+@ &#64; 	&#64;	&#x40;
+percent &#37; &#37;
+Double quotes 9	“ ”	&#8220; &#8221;
++- &#177;
+±
+CO2 CO<sub>2</sub>
+O2 O<sub>2</sub>
+<sup>3</sup>/<sub>4</sub>
+
+/ &#47;
+- &#45;
+` &#715; 
+ˊ &#714;
+½ &#xbd;
+¼ &#xbc;
+* &#xd7;
+- &#x2212;
+1&frasl;16 1/16
+Greack
+Rho &#929;
+Teta &#920;
+omega &#937;
+
+UPPERCASE O WITH DOUBLE GRAVE ö &#x020C;
+"answerExplain": "",

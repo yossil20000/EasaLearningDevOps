@@ -1,0 +1,45 @@
+﻿@using LearningQA.Shared.DTO
+@inject IPersonInfoPersist personInfoPersist
+@if(Persons is not null)
+{
+    <select class="bg-color3 color-8" style="width:100%;margin: 2px 0px 2px 2px;min-width: 0;height: 100%;"  @onchange="OnSelectionChanged">
+    @if (@*SelectedPerson is not null*@    true)
+        {
+            @if (EnableAll)
+            {
+                <option value="0">All</option>
+            }
+        @foreach (var person in Persons)
+        {
+            <option value="@person.Id">@person.Name</option>
+        }
+    }
+   
+    </select>
+}
+@code {
+    [Parameter] public List<PersonInfoDto> Persons {get;set;}
+    [Parameter] public PersonInfoDto SelectedPerson {set;get;}
+    [Parameter] public EventCallback<int> OnSelectionChange { get; set; }
+    [Parameter] public bool EnableAll { get; set; } = false;
+    protected override void OnInitialized()
+    {
+        personInfoPersist.IsSelecedAll = true;
+        base.OnInitialized();
+    }
+    protected override void OnParametersSet()
+    {
+
+        base.OnParametersSet();
+    }
+    public void OnSelectionChanged(ChangeEventArgs ea)
+    {
+            int selected = int.Parse(ea.Value.ToString());
+            personInfoPersist.IsSelecedAll = false;
+            if(selected == 0)
+                personInfoPersist.IsSelecedAll = true;
+            personInfoPersist.SelectedPerson = Persons.Where(x => x.Id == selected ).FirstOrDefault();
+            OnSelectionChange.InvokeAsync(int.Parse(ea.Value.ToString()));
+    }
+}
+@*@bind="SelectedPerson.Id"*@
