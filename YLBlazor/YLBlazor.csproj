@@ -4,6 +4,29 @@
     <TargetFramework>net6.0</TargetFramework>
     
     <TypeScriptToolsVersion>4.1.2</TypeScriptToolsVersion>
+    
+    <AssemblyVersion>1.1.1.0</AssemblyVersion>
+    
+    <Version>1.1.0.0</Version>
+    
+    <Description>Add YLGrid
+Responsive "Table" Base on css grid</Description>
+    
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    
+    <PackageTags>Blazor, Component, Net6</PackageTags>
+    
+    <Authors>Yossil2000</Authors>
+    
+    <Company>Yossil2000</Company>
+    
+    <Product>YL.Blazor</Product>
+    
+    <PackageId>Yossil2000.YLBlazor</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>D:\Users\yossil\Documents\ReposOnYossil\Repos.Github\EasaLearningDevOps\Bin\</OutputPath>
   </PropertyGroup>
 
   

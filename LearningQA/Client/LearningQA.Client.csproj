@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.6.21355.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0-preview.6.21352.12" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0-preview.6.21352.12" />
-    <PackageReference Include="Yossil2000.DateTimeExtensions" Version="1.0.0" />
+    <PackageReference Include="Yossil2000.ObjectTExtensions" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>

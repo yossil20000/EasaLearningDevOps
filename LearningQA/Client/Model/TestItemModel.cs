@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using LearningQA.Client.ViewModel;
+using System.Web;
 
 namespace LearningQA.Client.Model
 {
@@ -144,8 +145,8 @@ namespace LearningQA.Client.Model
 				var postContent = new StringContent(postString, Encoding.UTF8, "application/json"); //We can use "application/xml"
 
 				response = await httpClient.PostAsync($"api/Exam/UpdateExam", postContent);
-				var errors = response.GetErrosIfExist();
-				Console.WriteLine(response.GetPrintableErrosIfExist());
+				var errors = await response.GetErrosIfExistAsync();
+				Console.WriteLine(await response.GetPrintableErrosIfExistAsync());
 			}
 			catch(Exception ex)
 			{
@@ -190,8 +191,20 @@ namespace LearningQA.Client.Model
 				}
 				queryString.Add("questionListFilter", questionListFilter.ToString());
 				var quer = queryString.ToString();
-				//api/Exam/CombineExamByIds?Ids=11&Ids=23
-				var result = await httpClient.GetFromJsonAsync<ExamModel>($"api/Exam/CombineExamByIds?{quer}");
+				HttpUtility httpUtility = new HttpUtility();
+				
+				HttpUtilityExtentions.Clear();
+				HttpUtilityExtentions.BuildeUriQueryCollection<int>(httpUtility ,testIds.Ids, "Ids");
+				HttpUtilityExtentions.BuildeUriQueryCollection(httpUtility,"questionListFilter", questionListFilter.ToString());
+				var qq = HttpUtilityExtentions.QueryString();
+				Console.WriteLine($"With HTTPUtilityExtention: {qq}");
+				HttpUtilityExtentions.Clear();
+				httpUtility.BuildeUriQueryCollection<int>( testIds.Ids, "Ids")
+					.BuildeUriQueryCollection("questionListFilter", questionListFilter.ToString());
+				var qq2 = HttpUtilityExtentions.QueryString();
+				Console.WriteLine($"With httputil oblect: {qq2}");
+				//api/Exam/CombineExamByIds?Ids=11&Ids=23 
+				var result = await httpClient.GetFromJsonAsync<ExamModel>($"api/Exam/CombineExamByIds?{qq2}");
 				return result;
 			}
 			catch (Exception ex)
