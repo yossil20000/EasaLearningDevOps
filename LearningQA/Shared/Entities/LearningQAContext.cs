@@ -8,18 +8,35 @@ using System.Threading.Tasks;
 using LearningQA.Shared.Entities;
 using LearningQA.Shared.Interface;
 
+using Microsoft.Extensions.Logging;
+
+using LearningQA.Shared.Configuration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace LearningQA.Shared.Entities
 {
 	public class LearningQAContext : DbContext
 	{
-		public LearningQAContext() { }
-		public LearningQAContext( DbContextOptions<LearningQAContext> options) : base(options)
+		protected readonly IConfiguration Configuration;
+		//protected readonly IServiceCollection services;
+		
+		public LearningQAContext(IConfiguration configuration/*, IServiceCollection service*/) 
 		{
+			Configuration = configuration;
+			//this.services = service;
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			
+			DataBaseConfig dbConfig = new DataBaseConfig();
+			var a = Configuration.GetSection(DataBaseConfig.ConfigSection);
+
+			optionsBuilder.UseSqlite(@$"Data Source=.\LearningQAContext1.db")
+			.UseLazyLoadingProxies()
+			.EnableSensitiveDataLogging()
+			.EnableDetailedErrors()
+			.LogTo(Console.WriteLine, LogLevel.Information);
 		}
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -28,20 +45,17 @@ namespace LearningQA.Shared.Entities
 			
 			//modelBuilder.Entity<QUestionSql>().HasIndex(qUestionSql => qUestionSql.QuestionNumber).IsUnique();
 		}
-		public DbSet<Person<int>> Person { get; set; }
-		public DbSet<AnswareOption<int>> AnswareOptions { get; set; }
-		public DbSet<QuestionOption<int>> QuestionOptions { get; set; }
-		public DbSet<Answer<int>> Answers { get; set; }
 
-		public DbSet<Supplement<int>> Supplements { get; set; }
+		public virtual DbSet<Person<int>> Person { get; set; }
+		public virtual DbSet<AnswareOption<int>> AnswareOptions { get; set; }
+		public virtual DbSet<QuestionOption<int>> QuestionOptions { get; set; }
+		public virtual DbSet<Answer<int>> Answers { get; set; }
+		public virtual DbSet<Supplement<int>> Supplements { get; set; }
+		public virtual DbSet<Category<int>> Categories { get; set; }
+		public virtual DbSet<TestItem<QUestionSql, int>> TestItems { get; set; }
+		public virtual DbSet<QUestionSql> QUestionSqls { get; set; }
+		public virtual DbSet<Test<QUestionSql, int>> Tests { get; set; }
 
-		public DbSet<Category<int>> Categories { get; set; }
-
-		public DbSet<TestItem<QUestionSql,int>> TestItems { get; set; }
-		public DbSet<QUestionSql> QUestionSqls { get; set; }
-		public DbSet<Test<QUestionSql, int>> Tests { get; set; }
-		
-		
 	}
 	
 

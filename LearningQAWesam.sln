@@ -13,6 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YLBlazor", "YLBlazor\YLBlaz
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebExtention", "D:\Users\yossil\Documents\ReposOnYossil\Repos.Github\UtilitisLibary\WebExtention\WebExtention.csproj", "{D2BB71BD-7A95-4C40-97EA-B37B1B862E17}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{DA2CD1CE-B339-4B22-8335-4979A1CF3803}"
+	ProjectSection(SolutionItems) = preProject
+		Installed.txt = Installed.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

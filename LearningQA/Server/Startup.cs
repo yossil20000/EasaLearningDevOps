@@ -1,6 +1,7 @@
-using LearningQA.Server.Configuration;
+﻿using LearningQA.Server.Configuration;
 using LearningQA.Server.Infrasructure;
 using LearningQA.Shared;
+using LearningQA.Shared.Configuration;
 using LearningQA.Shared.Entities;
 using LearningQA.Shared.Extensions;
 
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,6 +50,9 @@ namespace LearningQA.Server
 			Configuration.GetSection("LeaningConfig").Bind(configBinding);
 			//ByService, can injected to the control
 			services.Configure<LeaningConfig>(Configuration.GetSection(LeaningConfig.ConfigSection));
+            var dbConfig = new DataBaseConfig();
+            Configuration.GetSection(DataBaseConfig.ConfigSection).Bind(dbConfig);
+            services.Configure<DataBaseConfig>(Configuration.GetSection(DataBaseConfig.ConfigSection));
 			//Add swagger
 			services.AddSwaggerGen();
 			//
@@ -67,24 +72,30 @@ namespace LearningQA.Server
 			//
 			//AutoMapper
 			services.AddAutoMapper(typeof(Startup));
-			//
+            //
 
-			//Applicatiob DBContext
-			services.AddApplicationDbConext();
+            //Applicatiob DBContext
+            if (dbConfig.DataBaseInfo.DataBaseType == DataBaseType.UseSqlite)
+                services.AddApplicationSQLightDbConext(dbConfig);
+                //services.AddDbContext<LearningQAContext>();
+            else if (dbConfig.DataBaseInfo.DataBaseType == DataBaseType.UseSqlServer)
+                services.AddApplicationSQLServerDbConext(dbConfig);
+                //services.AddDbContext<LearningQAContext, DataContext>();
 			//
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env,LearningQAContext dbContext)
 		{
-			var serviceScopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
-			using(var serviceScope = serviceScopeFactory.CreateScope())
-			{
-				var dbContext = serviceScope.ServiceProvider.GetService<LearningQAContext>();
-				dbContext.Database.EnsureCreated();
-			}
+            dbContext.Database.Migrate();
+            var serviceScopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+			//using(var serviceScope = serviceScopeFactory.CreateScope())
+			//{
+			//	var dbContext = serviceScope.ServiceProvider.GetService<LearningQAContext>();
+			//	dbContext.Database.EnsureCreated();
+			//}
 			// Enable middleware to serve generated Swagger as a JSON endpoint.
 			app.UseSwagger();
 			// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
