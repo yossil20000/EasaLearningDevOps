@@ -42,7 +42,7 @@ namespace LearningQA.Shared.Entities
 		{
 			modelBuilder.Entity<Person<int>>().HasIndex(person => person.IdNumber).IsUnique();
 			modelBuilder.Entity<TestItem<QUestionSql, int>>().HasIndex(testItem => new { testItem.Category, testItem.Chapter, testItem.Subject, testItem.Version }).IsUnique();
-			
+			modelBuilder.ApplyConfiguration(new PersonConfiguration());
 			//modelBuilder.Entity<QUestionSql>().HasIndex(qUestionSql => qUestionSql.QuestionNumber).IsUnique();
 		}
 

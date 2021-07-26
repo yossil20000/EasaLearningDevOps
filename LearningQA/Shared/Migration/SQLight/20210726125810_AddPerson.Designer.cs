@@ -3,14 +3,16 @@ using System;
 using LearningQA.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LearningQA.Shared.Migration.SQLight
 {
     [DbContext(typeof(LearningQAContext))]
-    partial class LearningQAContextModelSnapshot : ModelSnapshot
+    [Migration("20210726125810_AddPerson")]
+    partial class AddPerson
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
