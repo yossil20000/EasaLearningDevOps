@@ -35,7 +35,18 @@ namespace LearningQA.Shared.Configuration
 					Phone = "+97249984220",
 					Email = "Yoni@gmail.com",
 					Password = "12345@12345"
-				});
+				},
+				new Person<int>()
+				{
+					Id = 4,
+					IdNumber = "1502626",
+					Name = "Tal Levy",
+					Address = "Gilon",
+					Phone = "+97249984226",
+					Email = "Tal@gmail.com",
+					Password = "12345@12345"
+				}
+				);
 		}
 	}
 }
