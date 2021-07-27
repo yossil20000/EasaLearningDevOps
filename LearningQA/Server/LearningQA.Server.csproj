@@ -25,6 +25,8 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\LearningContextSqlightMigrations\LearningContextSqlightMigrations.csproj" />
+    <ProjectReference Include="..\..\LearningContextSqlServerMigrations\LearningContextSqlServerMigrations.csproj" />
     <ProjectReference Include="..\Client\LearningQA.Client.csproj" />
     <ProjectReference Include="..\Shared\LearningQA.Shared.csproj" />
   </ItemGroup>

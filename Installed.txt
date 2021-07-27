@@ -2,5 +2,8 @@ dotnet tool update --global dotnet-ef
 cd D:\Users\yossil\Documents\ReposOnYossil\Repos.Github\EasaLearningDevOps\LearningQA\Shared
 add-migration intitialCreate -Context LearningQAContext   -Project LearningQA.Shared -OutputDir Migration/SQLight
 
-
+add-migration AddPerson4 -Context DataContext   -Project LearningQA.Shared -OutputDir Migration/SQLServer
 update-database intitialCreateServer -Context DataContext   -Project LearningQA.Shared
+
+by Using MigrationAssambly we can write:
+add-migration AddPerson4 -Context DataContext

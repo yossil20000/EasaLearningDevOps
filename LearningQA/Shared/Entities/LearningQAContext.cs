@@ -21,7 +21,7 @@ namespace LearningQA.Shared.Entities
 		protected readonly IConfiguration Configuration;
 		//protected readonly IServiceCollection services;
 		
-		public LearningQAContext(IConfiguration configuration/*, IServiceCollection service*/) 
+		public LearningQAContext(IConfiguration configuration/*, IServiceCollection service*/,DbContextOptions<LearningQAContext> options) :base(options) 
 		{
 			Configuration = configuration;
 			//this.services = service;
@@ -29,14 +29,14 @@ namespace LearningQA.Shared.Entities
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			DataBaseConfig dbConfig = new DataBaseConfig();
-			var a = Configuration.GetSection(DataBaseConfig.ConfigSection);
+			//DataBaseConfig dbConfig = new DataBaseConfig();
+			//var a = Configuration.GetSection(DataBaseConfig.ConfigSection);
 
-			optionsBuilder.UseSqlite(@$"Data Source=.\LearningQAContext1.db")
-			.UseLazyLoadingProxies()
-			.EnableSensitiveDataLogging()
-			.EnableDetailedErrors()
-			.LogTo(Console.WriteLine, LogLevel.Information);
+			//optionsBuilder.UseSqlite(@$"Data Source=.\LearningQAContext1.db")
+			//.UseLazyLoadingProxies()
+			//.EnableSensitiveDataLogging()
+			//.EnableDetailedErrors()
+			//.LogTo(Console.WriteLine, LogLevel.Information);
 		}
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

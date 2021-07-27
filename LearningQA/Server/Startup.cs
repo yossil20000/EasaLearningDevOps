@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using System;
@@ -75,14 +76,50 @@ namespace LearningQA.Server
             //
 
             //Applicatiob DBContext
-            if (dbConfig.DataBaseInfo.DataBaseType == DataBaseType.UseSqlite)
-                services.AddApplicationSQLightDbConext(dbConfig);
-                //services.AddDbContext<LearningQAContext>();
-            else if (dbConfig.DataBaseInfo.DataBaseType == DataBaseType.UseSqlServer)
-                services.AddApplicationSQLServerDbConext(dbConfig);
-                //services.AddDbContext<LearningQAContext, DataContext>();
-			//
-			services.AddControllersWithViews();
+            //https://github.com/dotnet/EntityFramework.Docs/blob/main/samples/core/Schemas/TwoProjectMigrations/WorkerService1/Program.cs
+            //         if (dbConfig.Provider == DataBaseType.UseSqlite)
+            //         {
+            //             var connectionstring = Configuration.GetConnectionString("DbConfig:ConnectionString:SqliteConnectionString");
+            //             services.AddDbContext<LearningQAContext>(options => 
+            //             options.UseSqlite("Data Source=.\\LearningQAContext.db;Cache=Shared",
+            //             migration => migration.MigrationsAssembly("LearningContextSqlightMigrations"))
+            //             .UseLazyLoadingProxies()
+            //             .EnableSensitiveDataLogging()
+            //             .EnableDetailedErrors()
+            //             .LogTo(Console.WriteLine, LogLevel.Information));
+            //         }
+            //             //services.AddApplicationSQLightDbConext(dbConfig);
+            //             //services.AddDbContext<LearningQAContext>();
+            //         else if (dbConfig.Provider == DataBaseType.UseSqlServer)
+            //         {
+            //             var connectionstring = Configuration.GetConnectionString("DbConfig:ConnectionString:SqlServerConnectionString");
+            //             services.AddDbContext<LearningQAContext>(options =>
+            //             options.UseSqlServer(Configuration.GetConnectionString("DbConfig:ConnectionString:SqlServerConnectionString"),
+            //             migration => migration.MigrationsAssembly("LearningContextSqlServerMigrations"))
+            //             .UseLazyLoadingProxies()
+            //             .EnableSensitiveDataLogging()
+            //             .EnableDetailedErrors()
+            //             .LogTo(Console.WriteLine, LogLevel.Information));
+            //         }
+            //             //services.AddApplicationSQLServerDbConext(dbConfig);
+            //             //services.AddDbContext<LearningQAContext, DataContext>();
+            ////
+            ///
+            var provider = Configuration.GetValue("DbConfig:Provider", "");
+            services.AddDbContext<LearningQAContext>(
+                options => _ = provider switch
+                {
+                    "UseSqlite" => options.UseSqlite(
+                        Configuration.GetValue<string>("DbConfig:ConnectionString:SqliteConnectionString"),
+                        x => x.MigrationsAssembly("LearningContextSqlightMigrations")),
+
+                    "UseSqlServer" => options.UseSqlServer(
+                        Configuration.GetValue<string>("DbConfig:ConnectionString:SqlServerConnectionString"),
+                        x => x.MigrationsAssembly("LearningContextSqlServerMigrations")),
+
+                    _ => throw new Exception($"Unsupported provider: {provider}")
+                });
+            services.AddControllersWithViews();
 			services.AddRazorPages();
 		}
 
