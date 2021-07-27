@@ -22,7 +22,8 @@ namespace LearningQA.Shared.Extensions
 		public static IServiceCollection AddApplicationSQLightDbConext(this IServiceCollection services, DataBaseConfig dbConfig)
 		{
 			services.AddDbContext<LearningQAContext>(opt =>
-			opt.UseSqlite(@$"Data Source=.\{dbConfig.DataBaseInfo.Source}",opt => opt.MigrationsAssembly("LearningQA.Shared"))
+			//opt.UseSqlite(@$"Data Source=.\{dbConfig.DataBaseInfo.Source}",opt => opt.MigrationsAssembly("LearningQA.Shared"))
+			opt.UseSqlite(dbConfig.ConnectionString.SqliteConnectionString, opt => opt.MigrationsAssembly("LearningQA.Shared"))
 			.UseLazyLoadingProxies()
 			.EnableSensitiveDataLogging()
 			.EnableDetailedErrors()
@@ -43,7 +44,8 @@ namespace LearningQA.Shared.Extensions
 			//return services;
 			
 			services.AddDbContext<LearningQAContext,DataContext>(opt =>
-			opt.UseSqlServer(dbConfig.DataBaseInfo.ConnectionString, option => option.MigrationsAssembly("LearningQA.Shared"))
+			//opt.UseSqlServer(dbConfig.DataBaseInfo.ConnectionString, option => option.MigrationsAssembly("LearningQA.Shared"))
+			opt.UseSqlServer(dbConfig.ConnectionString.SqlServerConnectionString, option => option.MigrationsAssembly("LearningQA.Shared"))
 			.UseLazyLoadingProxies()
 			.EnableSensitiveDataLogging()
 			.EnableDetailedErrors()
