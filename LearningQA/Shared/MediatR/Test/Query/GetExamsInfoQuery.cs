@@ -79,7 +79,14 @@ namespace LearningQA.Shared.MediatR.Test.Query
 				//			 };
 				var persons =await  (from p in dbContext.Person
 							  where (request.ExamListRequest.PersonId == 0 ? true : request.ExamListRequest.PersonId == p.Id)
-							  select p ).ToListAsync();
+							  select p )
+							  .Include(x => x.Tests)
+							  .ThenInclude(x => x.Answers)
+							  .ThenInclude(x => x.QUestionSql)
+							  .Include(x => x.Tests)
+							  .ThenInclude(x => x.Answers)
+							  .ThenInclude(x => x.SelectedAnswer)
+							  .ToListAsync();
 
 				List<ExamInfoModel> result = new List<ExamInfoModel>();
 				foreach (var p in persons)

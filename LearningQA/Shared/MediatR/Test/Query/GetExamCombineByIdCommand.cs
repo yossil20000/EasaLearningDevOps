@@ -51,7 +51,15 @@ namespace LearningQA.Shared.MediatR.Test.Query
 			try
 			{
 				var result =  (from test in dbContext.Tests
-									where request.TestsIds.Contains(test.Id)
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.QUestionSql)
+										.ThenInclude(x => x.Options)
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.QUestionSql)
+										.ThenInclude(x => x.Supplements)
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.SelectedAnswer)
+							   where request.TestsIds.Contains(test.Id)
 									join testItem in dbContext.TestItems
 									on test.TestItemId equals testItem.Id
 									select new ExamModel() { Test = test, Duration = testItem.Duration, Title = testItem.GeTestItemTitle() });

@@ -38,7 +38,15 @@ namespace LearningQA.Shared.MediatR.Test.Query
 			{
 				//var result = await dbContext.Tests.Where(x => x.Id == request.TestId).FirstOrDefaultAsync();
 				var result = await (from test in dbContext.Tests
-							 where test.Id == request.TestId
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.QUestionSql)
+										.ThenInclude(x => x.Options)
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.QUestionSql)
+										.ThenInclude(x => x.Supplements)
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.SelectedAnswer)
+									where test.Id == request.TestId
 							 join testItem in dbContext.TestItems
 							 on test.TestItemId equals testItem.Id
 							 select new ExamModel() { Test = test, Duration = testItem.Duration, Title=testItem.GeTestItemTitle()}).FirstOrDefaultAsync();

@@ -3,11 +3,13 @@ using LearningQA.Shared.MediatR.RequestWrapper;
 using LearningQA.Shared.MediatR.TestItem;
 using LearningQA.Shared.MediatR.TestItem.Command;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using ServiceResult;
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,10 +34,17 @@ namespace LearningQA.Shared.MediatR.Test.Command
 		{
 			try
 			{
-
+			
 				//dbContext.ChangeTracker.Clear();
-				var exam = dbContext.Tests.Find(request.Id);
-
+				var exam = await dbContext.Tests.Include(x => x.Answers)
+										.ThenInclude(x => x.QUestionSql)
+										.ThenInclude(x => x.Options)
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.QUestionSql)
+										.ThenInclude(x => x.Supplements)
+									.Include(x => x.Answers)
+										.ThenInclude(x => x.SelectedAnswer).Where(x => x.Id == request.Id).FirstOrDefaultAsync();
+									
 				dbContext.Answers.RemoveRange(exam.Answers);
 				dbContext.Remove(exam);
 				var result = await dbContext.SaveChangesAsync();

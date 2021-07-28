@@ -45,7 +45,11 @@ namespace LearningQA.Shared.MediatR.Test.Command
 					x.Category.ToUpper() == request.TestItemInfo.Category.ToUpper() && 
 					x.Subject.ToUpper() == request.TestItemInfo.Subject.ToUpper() && 
 					x.Chapter.ToUpper() == request.TestItemInfo.Chapter.ToUpper() &&
-					x.Version == request.TestItemInfo.Version).FirstOrDefaultAsync();
+					x.Version == request.TestItemInfo.Version)
+					.Include(x => x.Questions)
+					.ThenInclude(s => s.Supplements)
+					.Include(x => x.Questions)
+					.ThenInclude(s => s.Options).FirstOrDefaultAsync();
 
 				if (testItem == null)
 				{

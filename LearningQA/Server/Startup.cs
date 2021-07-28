@@ -77,34 +77,8 @@ namespace LearningQA.Server
 
             //Applicatiob DBContext
             //https://github.com/dotnet/EntityFramework.Docs/blob/main/samples/core/Schemas/TwoProjectMigrations/WorkerService1/Program.cs
-            //         if (dbConfig.Provider == DataBaseType.UseSqlite)
-            //         {
-            //             var connectionstring = Configuration.GetConnectionString("DbConfig:ConnectionString:SqliteConnectionString");
-            //             services.AddDbContext<LearningQAContext>(options => 
-            //             options.UseSqlite("Data Source=.\\LearningQAContext.db;Cache=Shared",
-            //             migration => migration.MigrationsAssembly("LearningContextSqlightMigrations"))
-            //             .UseLazyLoadingProxies()
-            //             .EnableSensitiveDataLogging()
-            //             .EnableDetailedErrors()
-            //             .LogTo(Console.WriteLine, LogLevel.Information));
-            //         }
-            //             //services.AddApplicationSQLightDbConext(dbConfig);
-            //             //services.AddDbContext<LearningQAContext>();
-            //         else if (dbConfig.Provider == DataBaseType.UseSqlServer)
-            //         {
-            //             var connectionstring = Configuration.GetConnectionString("DbConfig:ConnectionString:SqlServerConnectionString");
-            //             services.AddDbContext<LearningQAContext>(options =>
-            //             options.UseSqlServer(Configuration.GetConnectionString("DbConfig:ConnectionString:SqlServerConnectionString"),
-            //             migration => migration.MigrationsAssembly("LearningContextSqlServerMigrations"))
-            //             .UseLazyLoadingProxies()
-            //             .EnableSensitiveDataLogging()
-            //             .EnableDetailedErrors()
-            //             .LogTo(Console.WriteLine, LogLevel.Information));
-            //         }
-            //             //services.AddApplicationSQLServerDbConext(dbConfig);
-            //             //services.AddDbContext<LearningQAContext, DataContext>();
-            ////
-            ///
+            // If you want to inherit From other Context
+            //This technic use  lib for each migration
             var provider = Configuration.GetValue("DbConfig:Provider", "");
             services.AddDbContext<LearningQAContext>(
                 options => _ = provider switch
@@ -119,6 +93,7 @@ namespace LearningQA.Server
 
                     _ => throw new Exception($"Unsupported provider: {provider}")
                 });
+            //
             services.AddControllersWithViews();
 			services.AddRazorPages();
 		}
@@ -126,13 +101,10 @@ namespace LearningQA.Server
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env,LearningQAContext dbContext)
 		{
+            //Apply Migration
             dbContext.Database.Migrate();
-            var serviceScopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
-			//using(var serviceScope = serviceScopeFactory.CreateScope())
-			//{
-			//	var dbContext = serviceScope.ServiceProvider.GetService<LearningQAContext>();
-			//	dbContext.Database.EnsureCreated();
-			//}
+            //
+            
 			// Enable middleware to serve generated Swagger as a JSON endpoint.
 			app.UseSwagger();
 			// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),

@@ -3,11 +3,13 @@ using LearningQA.Shared.MediatR.RequestWrapper;
 using LearningQA.Shared.MediatR.TestItem;
 using LearningQA.Shared.MediatR.TestItem.Command;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using ServiceResult;
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,7 +41,9 @@ namespace LearningQA.Shared.MediatR.Test.Command
 				//using(var context = new LearningQAContext())
 				{
 					//dbContext.ChangeTracker.Clear();
-					var person = dbContext.Person.Find(request.PersonId);
+					var person = await dbContext.Person
+						.Where(x => x.Id == request.PersonId)
+						.Include(x => x.Tests).FirstOrDefaultAsync();
 					
 					person.Tests.Add(request.Test);
 					dbContext.Update(person);
