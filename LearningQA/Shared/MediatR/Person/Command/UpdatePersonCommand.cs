@@ -50,6 +50,7 @@ namespace LearningQA.Shared.MediatR.Person.Command
 					person.Email = request.Person.Email;
 					person.Address = request.Person.Address;
 					person.Password = request.Person.Password;
+					person.Preferance = request.Person.Preferance;
 					 dbContext.Person.Update(person);
 					var result = await dbContext.SaveChangesAsync();
 					return new SuccessResult<PersonInfoDto>(request.Person);

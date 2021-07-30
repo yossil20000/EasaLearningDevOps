@@ -125,11 +125,16 @@ namespace LearningContextSqlServerMigrations.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PreferanceId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdNumber")
                         .IsUnique()
                         .HasFilter("[IdNumber] IS NOT NULL");
+
+                    b.HasIndex("PreferanceId");
 
                     b.ToTable("Person");
 
@@ -164,6 +169,24 @@ namespace LearningContextSqlServerMigrations.Migrations
                             Password = "12345@12345",
                             Phone = "+97249984226"
                         });
+                });
+
+            modelBuilder.Entity("LearningQA.Shared.Entities.Preferance<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("HUE")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Theme")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Preferance<int>");
                 });
 
             modelBuilder.Entity("LearningQA.Shared.Entities.QUestionSql", b =>
@@ -352,6 +375,15 @@ namespace LearningContextSqlServerMigrations.Migrations
                         .HasForeignKey("Test<QUestionSql, int>Id");
 
                     b.Navigation("QUestionSql");
+                });
+
+            modelBuilder.Entity("LearningQA.Shared.Entities.Person<int>", b =>
+                {
+                    b.HasOne("LearningQA.Shared.Entities.Preferance<int>", "Preferance")
+                        .WithMany()
+                        .HasForeignKey("PreferanceId");
+
+                    b.Navigation("Preferance");
                 });
 
             modelBuilder.Entity("LearningQA.Shared.Entities.QUestionSql", b =>

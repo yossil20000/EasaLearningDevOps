@@ -1,0 +1,127 @@
+@use "sass:map";
+// -----------------------------------------------------------------------------
+// This file contains very basic styles.
+// -----------------------------------------------------------------------------
+
+
+
+/**
+ * Make all elements from the DOM inherit from the parent box-sizing
+ * Since `*` has a specificity of 0, it does not override the `html` value
+ * making all elements inheriting from the root box-sizing value
+ * See: https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+ */
+/* *,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+ */
+//More Genereral then html{}
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+
+:root {
+    --font-family: Sansita, Swashed;
+    --font-size: calc(0.5vw + 0.5vh + .5vmin);
+    --font-weight: bold; 
+    --shade-count: #{$shade-count};
+    --hue-percent: #{$hue-percent};
+    --bg-image-linear-stop: 120%;
+    /* 1 */
+    -webkit-text-size-adjust: 100%;
+    /* 2 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+//@include fluid-type(font-size, $minScreen, $maxScreen, $minFont, $maxFont);
+
+ 
+ //font: normal small-caps calc(1vw + 1vh + .5vmin) var(--bs-font-sans-serif, 9)
+ //font: normal small-caps calc(1vw + 1vh + .5vmin) Literata;
+ //font: normal small-caps bold calc(1vw + 1vh + .5vmin) 'Crimson Pro';
+ //font: normal small-caps bold calc(1vw + 1vh + .5vmin) var(--font-family);
+
+ height: 100%;
+ box-sizing: border-box;
+ font-size: var(--font-size);
+ font-family: var(--font-family);
+ font-weight: var(--font-weight);
+ line-height: 0.9;
+ text-rendering: optimizeLegibility;
+
+ @media screen and (max-width : screen-size(tablet)) {
+  --font-size: calc(0.5vw + 1vh + .5vmin); 
+};
+
+
+
+}
+
+// https://css-tricks.com/almanac/properties/s/scrollbar/
+body::-webkit-scrollbar {
+  width: 1em;
+}
+ 
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+ 
+
+body::-webkit-scrollbar-thumb {
+  background-color: darkgray;
+  outline: 1px solid slategrey;
+}
+///
+
+/**
+ * Basic styles for links
+ */
+a {
+  // color: $brand-color;
+  text-decoration: none;
+
+  @include on-event {
+    color: $text-color;
+    text-decoration: underline;
+  }
+}
+
+.rotate90 {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+  transform-origin: bottom;
+}
+.fill {
+  object-fit: fill;
+}
+
+.contain {
+  object-fit: contain;
+}
+
+.cover {
+  object-fit: cover;
+}
+
+.scale-down {
+  object-fit: scale-down;
+}
+
+.none {
+  object-fit: none;
+}
+
+/* Quick-zoom Container */
+.quick-img-zoom img {
+  transform-origin: 0 0;
+  transition: transform .25s, visibility .25s ease-in;
+}
+/* The Transformation */
+.quick-img-zoom:hover img {
+  transform: scale(2);
+}

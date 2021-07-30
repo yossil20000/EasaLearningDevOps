@@ -37,13 +37,17 @@ namespace LearningQA.Client.Pages
 		private bool supplementExpand { get; set; } = true;
 		private CanvasClassJsInterop canvasClassJsInterop;
 		private bool supplementFullExpand { get; set; } = true;
-		protected override async Task OnInitializedAsync()
+		protected override  void OnInitialized()
 		{
 			canvasClassJsInterop = new CanvasClassJsInterop(JSRuntime);
 			//await canvasClassJsInterop.Prompt("Hi From canvasJsInterop ");
-			await ExamVM?.RetriveTestItemInfos(0);
+			 ExamVM?.RetriveTestItemInfos(0);
 			IsInitialize = true;
-			await base.OnInitializedAsync();
+			 base.OnInitializedAsync();
+			personInfoPersist.OnChanged(OnPersonalInfoChanged);
+		}
+		private void OnPersonalInfoChanged()
+		{
 			StateHasChanged();
 		}
 		protected override async Task OnParametersSetAsync()

@@ -20,6 +20,7 @@ namespace LearningQA.Shared.Entities
 		public string Address { get; set; }
 		public string Password { get; set; }
 		public Tdb? Id { get; set; }
+		public Preferance<Tdb> Preferance { get; set; }
 		public virtual ICollection<Test<QUestionSql,Tdb>> Tests { get; set; } 
 		public void SetNull()
 		{

@@ -17,7 +17,7 @@ namespace LearningQA.Client.PageBase
 	{
 		SelectedSupplement
 	}
-	public class PersistanceBase : IDisposable, IViewPersistanceBase
+	public class PersistanceBase : PersistanceEventBase, IDisposable, IViewPersistanceBase
 	{
 		
 		public PersistanceBase()
@@ -84,45 +84,7 @@ namespace LearningQA.Client.PageBase
 		public List<string> Chapteres { get; set; } = new List<string>();
 		public bool Initialize { get; set; } = false;
 
-		#region Action Events
-		protected readonly List<Action> registration = new List<Action>();
-		protected readonly Dictionary<RegisterEvent, List<Task>> events = new Dictionary<RegisterEvent, List<Task>>();
-		public void Changed()
-		{
-			registration.ForEach(a => a());
 
-		}
-		public void RegisterEvent(RegisterEvent registerEvent,  Task callBack)
-		{
-			events[registerEvent].Add(callBack);
-		}
-		public void URegisterEvent(RegisterEvent registerEvent, Task callBack)
-		{
-			events[registerEvent].Remove(callBack);
-		}
-
-		public void  OnEventChanged(RegisterEvent registerEvent)
-		{
-			//events[registerEvent].ForEach(a => Task.Run(() => a));
-			var tasks = from a in events[PageBase.RegisterEvent.SelectedSupplement] select a;
-			Task.WhenAll(tasks.ToList());
-		}
-		public void OnChanged(Action callBack)
-		{
-			registration.Add(callBack);
-		}
-		public void OnUnChanged(Action callBack)
-		{
-			try
-			{
-				registration.Remove(callBack);
-			}
-			catch (Exception ex)
-			{
-
-			}
-		}
-		#endregion
 		public void Dispose()
 		{
 			

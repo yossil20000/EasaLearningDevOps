@@ -7,3 +7,9 @@ update-database intitialCreateServer -Context DataContext   -Project LearningQA.
 
 by Using MigrationAssambly we can write:
 add-migration AddPerson4 -Context DataContext
+
+//Nee to Set the provider
+"DbConfig": {
+    "Provider": "UseSqlite", //UseSqlite , UseSqlServer
+
+Add-Migration AddPreferanceClass -StartupProject LearningQA.Server  -Project LearningContextSqlightMigrations

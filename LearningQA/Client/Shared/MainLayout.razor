@@ -1,44 +1,60 @@
 ﻿@inherits LayoutComponentBase
 @inject LearningQA.Client.ViewModel.TestItemViewModelPersist TestItemViewModelPersist
-
-<div class="page">
-    <div class="sidebar bg-color-7 color-2">
-        <NavMenu />
-    </div>
-
-    <div class="main">
-        <div class="bg-color-7 color-2 top-row px-4 auth">
-			<div style="display:flex;justify-content: space-around;gap: 5px;align-items: center;justify-items: center;">
-			<div>@($"Remain: {TestItemViewModelPersist.CountDownRemain.ToString()}")</div>
+@inject IPersonInfoPersist PersonInfoPersist
+<div data-theme-container data-theme=@Them>
+	<div class="page">
+		<div class="sidebar bg-color-7 color-2">
+			<NavMenu />
 		</div>
-            <div style="display:flex;justify-content: space-around;gap: 5px;align-items: center;justify-items: center;">
-			<LearningQA.Client.Components.EditPersonDialog/>
-            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>				
+
+		<div class="main">
+			<div class="bg-color-7 color-2 top-row px-4 auth">
+				<div style="display:flex;justify-content: space-around;gap: 5px;align-items: center;justify-items: center;">
+				<div>@($"Remain: {TestItemViewModelPersist.CountDownRemain.ToString()}")</div>
+			</div>
+				<div style="display:flex;justify-content: space-around;gap: 5px;align-items: center;justify-items: center;">
+				<LearningQA.Client.Components.EditPersonDialog/>
+				<a href="http://blazor.net" target="_blank" class="ml-md-auto bg-color-7 color-2">About</a>				
+				</div>
+
 			</div>
 
-        </div>
-
-        <div >
-            @Body
-        </div>
-    </div>
+			<div >
+				@Body
+			</div>
+		</div>
+	</div>	
 </div>
+
 @code{
-    	bool IsRegistered = false;
+	bool IsRegistered = false;
+		string Them = "color-42";
 		protected override void OnAfterRender(bool firstRender)
 		{
 			if(!IsRegistered)
 			{
 				TestItemViewModelPersist.OnChanged(() => base.StateHasChanged());
+				PersonInfoPersist.OnChanged(() => OnThemChanged());
 				IsRegistered = true;
 			}
 			base.OnAfterRender(firstRender);
 		}
 		
+		private void OnThemChanged()
+		{
+			if (PersonInfoPersist.SelectedPerson is not null)
+			{
+				Them = $"color-{PersonInfoPersist.SelectedPerson.Preferance.Theme.ToString()}";
+				StateHasChanged();
+			}
+		}
 
 		public void Dispose()
 		{
 			if (IsRegistered)
+			{
 				TestItemViewModelPersist.OnUnChanged(() => base.StateHasChanged());
+				PersonInfoPersist.OnUnChanged(() => OnThemChanged());
+			}
 		}
 }

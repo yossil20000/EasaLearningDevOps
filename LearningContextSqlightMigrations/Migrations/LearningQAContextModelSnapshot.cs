@@ -118,10 +118,15 @@ namespace LearningContextSqlightMigrations.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("PreferanceId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdNumber")
                         .IsUnique();
+
+                    b.HasIndex("PreferanceId");
 
                     b.ToTable("Person");
 
@@ -156,6 +161,23 @@ namespace LearningContextSqlightMigrations.Migrations
                             Password = "12345@12345",
                             Phone = "+97249984226"
                         });
+                });
+
+            modelBuilder.Entity("LearningQA.Shared.Entities.Preferance<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HUE")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Theme")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Preferance<int>");
                 });
 
             modelBuilder.Entity("LearningQA.Shared.Entities.QUestionSql", b =>
@@ -338,6 +360,15 @@ namespace LearningContextSqlightMigrations.Migrations
                         .HasForeignKey("Test<QUestionSql, int>Id");
 
                     b.Navigation("QUestionSql");
+                });
+
+            modelBuilder.Entity("LearningQA.Shared.Entities.Person<int>", b =>
+                {
+                    b.HasOne("LearningQA.Shared.Entities.Preferance<int>", "Preferance")
+                        .WithMany()
+                        .HasForeignKey("PreferanceId");
+
+                    b.Navigation("Preferance");
                 });
 
             modelBuilder.Entity("LearningQA.Shared.Entities.QUestionSql", b =>

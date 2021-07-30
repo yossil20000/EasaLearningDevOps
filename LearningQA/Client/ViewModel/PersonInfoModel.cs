@@ -6,7 +6,9 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 using LearningQA.Client.Model;
+using LearningQA.Client.PageBase;
 using LearningQA.Shared.DTO;
+using LearningQA.Shared.Entities;
 
 namespace LearningQA.Client.ViewModel
 {
@@ -24,14 +26,34 @@ namespace LearningQA.Client.ViewModel
 		public bool IsSelecedAll { get; set; }
 		public PersonInfoDto SelectedPerson { get; set; }
 		public List<PersonInfoDto> Persons { get; set; }
+		public Preferance<int> Preferance { get; set; }
+		public void OnChanged(Action callBack);
+
+		public void OnUnChanged(Action callBack);
 	}
-	public class PersonInfoPersist : IPersonInfoPersist
+	public class PersonInfoPersist : PersistanceEventBase, IPersonInfoPersist
 	{
-		public PersonInfoDto SelectedPerson { get; set; }
-		public List<PersonInfoDto> Persons { get; set; }
+		private PersonInfoDto _selectedPerson;
+		public PersonInfoDto SelectedPerson { get { return _selectedPerson; } set { _selectedPerson = value; Changed(); } }
+		private List<PersonInfoDto>  _Persons;
+		public List<PersonInfoDto> Persons { 
+			get { return _Persons; }
+			set { _Persons = value; SelectedPerson = _Persons.FirstOrDefault();  } }
 		public bool IsSelecedAll { get; set; }
+		private Preferance<int> _preferance;
+		public Preferance<int> Preferance { 
+			get { return _selectedPerson == null ? new Preferance<int>() : _selectedPerson.Preferance; } 
+			set { 
+				if(_selectedPerson != null)
+				{
+					_selectedPerson.Preferance.Theme = value.Theme;
+					_selectedPerson.Preferance.HUE = value.HUE;
+					Changed();
+				}
+			}
+		}
 	}
-	public class PersonInfoModel : IPersonInfoModel
+	public class PersonInfoModel :  IPersonInfoModel
 	{
 		private HttpClient _httpClient;
 		private IPersonInfoPersist _personInfoPersist;
