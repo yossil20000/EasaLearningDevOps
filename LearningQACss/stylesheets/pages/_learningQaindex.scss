@@ -1,0 +1,52 @@
+nav{
+    .yl_nav{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        flex-grow: 1;
+        gap: 2ch;
+       justify-content: center;
+
+        color: firebrick;
+        
+    }
+}
+header .yl_learning_header
+{
+    text-align: center;
+}
+
+.yl_nav
+{
+    
+    a:hover , a:active {
+        text-decoration: underline;
+        color:inherit;
+    }
+}
+
+footer  .yl_footer{
+   display: flex;
+   flex-direction: column;
+   a {
+       color: inherit;
+   }
+}
+.yl_header-sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+  }
+  
+  .yl_header-sticky + .main {
+    padding-top: 6px;
+  }
+
+  .fixed-content {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    position:fixed;
+    overflow-y:scroll;
+    overflow-x:hidden;
+}

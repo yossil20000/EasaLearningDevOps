@@ -40,6 +40,7 @@ namespace LearningQA.Server.Controllers
 {
 	public class TestItemController : ApiControllerBase
 	{
+        private const string _loadFromFilePassword = "Tyy2000@Load";
 		private readonly IOptions<LeaningConfig> _learningConfig;
 		public TestItemController(ILogger<ApiControllerBase> logger,IMediator mediator, IOptions<LeaningConfig> learningConfig , IMapper mapper) :base(logger,mediator,mapper)
 		{
@@ -161,10 +162,10 @@ namespace LearningQA.Server.Controllers
             Tags = new[] { "TestItemEndpoint" })]
         [SwaggerResponse((int)System.Net.HttpStatusCode.OK, "bool", typeof(bool))]
         [SwaggerResponse((int)System.Net.HttpStatusCode.BadRequest, "string", typeof(string))]
-        public async Task<IActionResult> LoadNewFromFile(bool createNewDatabase = false, bool confirmCreate = false ,string fileName = "")
+        public async Task<IActionResult> LoadNewFromFile(string password="" ,bool createNewDatabase = false, bool confirmCreate = false ,string fileName = "")
 		{
             string[] filestoLoad = null;
-            if(createNewDatabase && !confirmCreate)
+            if(createNewDatabase && !confirmCreate || !(password ==_loadFromFilePassword))
             {
                
                 return BadRequest("Input createNewDatabase == false while loadAll");

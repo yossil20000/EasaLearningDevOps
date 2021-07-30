@@ -3472,6 +3472,68 @@ a:hover, a:active, a:focus {
       grid-template-columns: repeat(10, 1fr);
 }
 
+nav .yl_nav {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  gap: 2ch;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  color: firebrick;
+}
+
+header .yl_learning_header {
+  text-align: center;
+}
+
+.yl_nav a:hover, .yl_nav a:active {
+  text-decoration: underline;
+  color: inherit;
+}
+
+footer .yl_footer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+footer .yl_footer a {
+  color: inherit;
+}
+
+.yl_header-sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.yl_header-sticky + .main {
+  padding-top: 6px;
+}
+
+.fixed-content {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  position: fixed;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
 .pallete__grid1 {
   display: -ms-grid;
   display: grid;

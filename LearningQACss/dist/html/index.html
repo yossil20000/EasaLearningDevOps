@@ -1,16 +1,35 @@
-﻿@page "/"
-@using YLBlazor.CssCustomProperties.Services
-@inject ICustomProperties CustomProperty
- <div class="bg-color-2 color-8">
-        <header id="yl_header">
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>ClubLogBook</title>
+		<!-- <base href="/" /> -->
+		<!--<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />-->
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css"
+			integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK"
+			crossorigin="anonymous"
+		/>
+		<link href="/dist/css/main.css" rel="stylesheet" />
+		<link href="manifest.json" rel="manifest" />
+		<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+	</head>
+<body data-theme-container data-theme="color-45" >
+    <div class="bg-color-2 color-8">
+        <header id="header">
             <h1 class="yl_learning_header bg-color-4 color-8">Easa ATPL Question Bank (2016)</h1>
             <nav >
                 <div class="yl_nav">
-                    <a href="#summary" class="color-8 yl_link" onclick="event.stopPropagation()">Summary</a>
-                    <a href="#general" class="color-8" onclick="event.stopPropagation()">General</a>
-                    <a href="#test" class="color-8" onclick="event.stopPropagation()">Test Part</a>
-                    <a href="#review" class="color-8" onclick="event.stopPropagation()">Review Part</a>
-                    <a href="#contact" class="color-8" onclick="event.stopPropagation()">Contact</a>
+                    <a href="#summary" class="color-8 yl_link">Summary</a>
+                    <a href="#general" class="color-8">General</a>
+                    <a href="#test" class="color-8">Test Part</a>
+                    <a href="#review" class="color-8">Review Part</a>
+                    <a href="#contact" class="color-8">Contact</a>
                 </div>
                 
             </nav>
@@ -71,11 +90,11 @@
                     <li>From the Question list nav you can apply local filter on which you want to review</li>
                 </ul>
             </p>
-            <a href="#summary" onclick="event.stopPropagation()">Back to Summary</a>
+            <a href="#summary">Back to Summary</a>
         </main>
         <footer id="contact" >
             <div class="yl_footer bg-color-4 color-8">
-                <a href="mailto:yos.1965@gmail.com" ><label>Mail to: yos.1965@gmail.com</label></a>
+                <a href="mailto:yos.1965@gmail.com"><label>Mail to: yos.1965@gmail.com</label></a>
                 <a href="tel:+972549074752">
                     <label for="">Tel: +972549074752</label>
                 </a>
@@ -83,27 +102,19 @@
             
         </footer>
     </div>
-@*<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
-bgImageLinearStop = @bgImageLinearStop
-<LearningQA.Client.Components.DefaultModal/>*@
-@code
-{
-    string bgImageLinearStop { get; set; } = "";
-    protected override async void OnInitialized()
-    {
-        this.bgImageLinearStop = await this.CustomProperty.GetRootPropertyValueAsync("--bg-image-linear-stop");
-        Console.WriteLine($"bgImageLinearStop : {bgImageLinearStop}");
-        StateHasChanged();
-
-    }
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        return base.OnAfterRenderAsync(firstRender);
-    }
-
-}
-
+    <script>
+        window.onscroll = function() {myFunction()};
+        
+        var navbar = document.getElementById("yl_header");
+        var sticky = navbar.offsetTop;
+        
+        function myFunction() {
+          if (window.pageYOffset >= sticky) {
+            navbar.classList.add("yl_header-sticky")
+          } else {
+            navbar.classList.remove("yl_header-sticky");
+          }
+        }
+        </script>
+</body>
+</html>

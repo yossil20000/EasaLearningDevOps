@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>ClubLogBook</title>
+		<!-- <base href="/" /> -->
+		<!--<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />-->
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css"
+			integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK"
+			crossorigin="anonymous"
+		/>
+		<link href="/dist/css/main.css" rel="stylesheet" />
+		<link href="manifest.json" rel="manifest" />
+		<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+	</head>
+<body data-theme-container data-theme="color-45" style="height: 100vh;">
+    <div class="bg-color-2 color-8">
+        <header id="yl_header" class="fixed-content" style="height: 20ch;">
+            <h1 class="yl_learning_header bg-color-4 color-8">Easa ATPL Question Bank (2016)</h1>
+            <nav >
+                <div class="yl_nav">
+                    <a href="#summary" class="color-8 yl_link">Summary</a>
+                    <a href="#general" class="color-8">General</a>
+                    <a href="#test" class="color-8">Test Part</a>
+                    <a href="#review" class="color-8">Review Part</a>
+                    <a href="#contact" class="color-8">Contact</a>
+                </div>
+                
+            </nav>
+        </header>
+        <div style="position: relative; top: 15ch; ">
+            <main >
+            
+                <h2 id="summary">Summary</h2>
+                <p>
+                    Easa ATPL learning question bank consist of 14 chapters.
+                    You can have a test for each of the 14 chapter and later on you can review your exam
+                </p>
+                
+                <h2 id="general">General</h2>
+                <ul>
+                    <li>Peson Editor to create and edit Person info</li>
+                    <li>Them control with Color and Hue sliders, Select the person before enter to the person editor and save</li>
+                    <li> There are 2 parts, the test part and the review part</li>
+                </ul>
+                <h2>Useage</h2>
+                <p>
+                    
+                    <h3 id="test">Test part</h3>
+                    <a href="/testitem">Go To Test</a>
+                    <ul>
+                        <li>From main menue select test</li>
+                        <li>Select the person for the test applied to if not exist create a new person from the Person link</li>
+                        <li>Select Category, Chapter and Subject </li>
+                        <li>Select the Is Learning Mode if you want that the timer will not automatically finish the test at the end of thetest time</li>
+                        <li>Select Start</li>
+                        <ul>
+                            Durring the test:
+                            <li>Select the right answere</li>
+                            <li>You can Mark a question for further use in the review enable you to filter by Marks</li>
+                            <li>At the end select fininf</li>
+                            <li>if you want to save the resut press Save, otherwise Select new test</li>
+                        </ul>
+                    </ul>
+                </p>
+                <p>
+                    <h3 id="review">Review Part</h3>
+                    <a href="/testlist">Go To Review</a>
+                    <ul>
+                        <li>From the main maue select Review</li>
+                        <li>Filters</li>
+                        <ul>
+                            <li>Filter by test, Select the Category, Subject and Chapter</li>
+                            <li>Filter by Perso select the person name or All</li>
+                            <li>Filter by Answare result Answared, Wrong, Marked etc..</li>
+                        </ul>
+                        <li>Presst the Get Exam</li>
+                        The existing exams will fetch
+                        <li>Select the exam you want</li>
+                        <ul>
+                            <li>Load, will load the selected exam</li>
+                            <li>Load combine, will combine all the exam results from the same chaper</li>
+                            <li>Delete, delete the exam from the database</li>
+                        </ul>
+                        <li>From the Question list nav you can apply local filter on which you want to review</li>
+                    </ul>
+                </p>
+                <a href="#summary">Back to Summary</a>
+            </main>
+            <footer id="contact" >
+                <div class="yl_footer bg-color-4 color-8">
+                    <a href="mailto:yos.1965@gmail.com"><label>Mail to: yos.1965@gmail.com</label></a>
+                    <a href="tel:+972549074752">
+                        <label for="">Tel: +972549074752</label>
+                    </a>
+                </div>
+                
+            </footer>
+        </div>
+
+    </div>
+<!--     <script>
+        window.onscroll = function() {myFunction()};
+        
+        var navbar = document.getElementById("yl_header");
+        var sticky = navbar.offsetTop;
+        
+        function myFunction() {
+          if (window.pageYOffset >= sticky) {
+            navbar.classList.add("yl_header-sticky")
+          } else {
+            navbar.classList.remove("yl_header-sticky");
+          }
+        }
+        </script> -->
+</body>
+</html>
