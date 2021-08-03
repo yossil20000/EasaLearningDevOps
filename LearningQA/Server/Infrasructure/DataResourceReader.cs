@@ -10,30 +10,42 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace LearningQA.Server.Infrasructure
 {
-	public static class DataResourceReader
+	public  class DataResourceReader
 	{
         private static string DataResource = "DataResource";
         private static string DefaultDirectory = "TestItem";
-        public static string[] GetAllJsonFiles( string pattern=null, string directory = "TestItems")
+        private readonly ILogger _logger;
+       public DataResourceReader(ILogger<DataResourceReader> logger) { _logger = logger; }
+        public  string[] GetAllJsonFiles( string pattern=null, string directory = "TestItems")
         {
             try
             {
                 pattern = string.IsNullOrEmpty(pattern) ? "*.json" : pattern; 
                 string filename = $@"{System.IO.Directory.GetCurrentDirectory()}\{DataResource}\{directory}";
+                _logger.LogDebug($"DataResourceReader: Json path for Files: FileName {filename} Pattern: {pattern}");
                 var files = System.IO.Directory.GetFiles(filename,pattern);
+                _logger.LogDebug($"DataResourceReader:System.IO.Directory.GetFiles: Return Count: {files.Length}");
+
+                StringBuilder sb = new StringBuilder(); 
+                foreach (var f in files)
+                {
+                    sb.AppendLine(f);    
+                }
                 return files;
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
-        public static List<T> LoadJson<T>(string file = "TestItems.TestItem.json")
+        public  List<T> LoadJson<T>(string file = "TestItems.TestItem.json")
         {
             if(string.IsNullOrEmpty(file))
 			{
@@ -60,11 +72,11 @@ namespace LearningQA.Server.Infrasructure
             }
             catch(Exception ex)
 			{
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
 			}
             return null;
         }
-        public static List<T> LoadJsonFullName<T>(string file,BlockingCollection<List<T>> collection = null )
+        public  List<T> LoadJsonFullName<T>(string file,BlockingCollection<List<T>> collection = null )
         {
             if (string.IsNullOrEmpty(file))
             {
@@ -87,23 +99,38 @@ namespace LearningQA.Server.Infrasructure
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{MethodInfo.GetCurrentMethod().Name} File: {file} Ex:{Environment.NewLine} {ex.Message}");
+                _logger.LogError($"{MethodInfo.GetCurrentMethod().Name} File: {file} Ex:{Environment.NewLine} {ex.Message}");
             }
             return null;
         }
-        public static  string LoadImageForDisplay(string file)
+        public   string LoadImageForDisplay(string file)
         {
+            _logger.LogDebug($"LoadImageForDisplay: Start File: {file}");
             string filename = $@"{System.IO.Directory.GetCurrentDirectory()}\{file}";
-            byte[] fileContent = null;
-            System.IO.FileStream fs = new System.IO.FileStream(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs);
-            long byteLength = new System.IO.FileInfo(filename).Length;
-            fileContent = binaryReader.ReadBytes((Int32)byteLength);
-            var x = Convert.ToBase64String(fileContent);
-            fs.Close();
-            fs.Dispose();
-            binaryReader.Close();
-            return x;
+            _logger.LogDebug($"{MethodInfo.GetCurrentMethod().Name} FullFileName: {filename} ");
+            string imageBase64 = "";
+            try
+            {
+                _logger.LogDebug($"LoadImageForDisplay: file name: {filename}");
+                byte[] fileContent = null;
+                using System.IO.FileStream fs = new System.IO.FileStream(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                using System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs);
+                long byteLength = new System.IO.FileInfo(filename).Length;
+                _logger.LogDebug($"LoadImageForDisplay: byteLength: {byteLength}");
+                fileContent = binaryReader.ReadBytes((Int32)byteLength);
+                imageBase64 = Convert.ToBase64String(fileContent);
+                _logger.LogDebug($"LoadImageForDisplay: converted stinr: {imageBase64}");
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"{MethodInfo.GetCurrentMethod().Name} File: {filename} Ex:{Environment.NewLine} {ex.Message}");
+            }
+            finally
+            {
+                
+                
+            }
+            return imageBase64;
         }
     }
 }

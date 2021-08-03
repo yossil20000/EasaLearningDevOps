@@ -28,7 +28,7 @@ namespace LearningQA.Shared.MediatR.Person.Command
 	}
 	public class CreatePersonCommandHandler : BaseDBContextHandler, IHandlerWrapper<CreatePersonCommand, int>
 	{
-		public CreatePersonCommandHandler(LearningQAContext context, ILogger<BaseDBContextHandler> logger) : base(context, logger)
+		public CreatePersonCommandHandler(LearningQAContext context, ILogger<CreatePersonCommandHandler> logger) : base(context, logger)
 		{
 		}
 

@@ -4,11 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="C:\Users\yos\.nuget\packages\yossil2000.ylblazor\1.1.0\contentFiles\any\net6.0\tsconfig.json" />
-    <Content Remove="C:\Users\yos\.nuget\packages\yossil2000.ylblazor\1.1.0\contentFiles\any\net6.0\wwwroot\css-properties-support.js" />
-    <Content Remove="C:\Users\yos\.nuget\packages\yossil2000.ylblazor\1.1.0\contentFiles\any\net6.0\wwwroot\css-properties-support.js.map" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
@@ -19,10 +15,10 @@
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0-preview.6.21352.12" />
     <PackageReference Include="Yossil2000.ObjectTExtensions" Version="1.1.0" />
     <PackageReference Include="Yossil2000.WebExtention" Version="1.1.0" />
-    <PackageReference Include="Yossil2000.YLBlazor" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\YLBlazor\YLBlazor.csproj" />
     <ProjectReference Include="..\Shared\LearningQA.Shared.csproj" />
   </ItemGroup>
 

@@ -44,7 +44,10 @@ namespace LearningQA.Client
 			});
 			builder.Services.AddHttpClient<TestItemClient>(option => option.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 			builder.Services.AddScoped<IHttpClientServiceImplementation, HttpClientServiceImplementation>();
-
+			#region Loggin Builder
+			//builder.Logging.SetMinimumLevel(LogLevel.Debug);
+			//builder.Logging.AddProvider(new  CustomLoggingProvider());
+			#endregion
 			await builder.Build().RunAsync();
 		}
 		private static void ConfigurationServices(IServiceCollection services)

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -18,7 +19,6 @@ namespace LearningQA.Shared.MediatR.TestItem.Command
 	{
 		public List<TestItem<QUestionSql, int>> _testItems;
 		public Person<int> _person;
-		public bool CreateNewDatabase { get; set; } = false;
 		public CreateRangeTestItemCommand(List<TestItem<QUestionSql, int>> testItems , Person<int> person = null)
 		{
 			_testItems = testItems;
@@ -42,11 +42,6 @@ namespace LearningQA.Shared.MediatR.TestItem.Command
 		{
 			try
 			{
-				if(request.CreateNewDatabase)
-				{
-					dbContext.Database.EnsureDeleted();
-					dbContext.Database.EnsureCreated();
-				}
 				if(request._person != null && request._person.Id == 0)
 				{
 					if(!dbContext.Person.Where(x => x.IdNumber == request._person.IdNumber).Any())
@@ -61,6 +56,7 @@ namespace LearningQA.Shared.MediatR.TestItem.Command
 			}
 			catch (Exception ex)
 			{
+				Debug.WriteLine($"Exception in file{request._testItems.FirstOrDefault().GeTestItemTitle()} ");
 				logger.LogError(ex.Message);
 				return 0;
 			}

@@ -54,7 +54,14 @@ namespace LearningQA.Server
             var dbConfig = new DataBaseConfig();
             Configuration.GetSection(DataBaseConfig.ConfigSection).Bind(dbConfig);
             services.Configure<DataBaseConfig>(Configuration.GetSection(DataBaseConfig.ConfigSection));
-			//Add swagger
+
+            services.AddScoped<DataResourceReader>();
+            //AddApplicationIsight for loggin in cloud
+            //Need to pass InstrumentationKey
+            //we will use appsetting So we use default ctor
+            services.AddApplicationInsightsTelemetry();
+            //
+            //Add swagger
 			services.AddSwaggerGen();
 			//
 			//Mediator

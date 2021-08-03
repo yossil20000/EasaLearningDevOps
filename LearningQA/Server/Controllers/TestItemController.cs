@@ -1,50 +1,37 @@
 ﻿using AutoMapper;
-using AutoMapper.Internal;
-
-using Castle.Core.Internal;
-using Castle.Core.Logging;
 
 using LearningQA.Server.Configuration;
 using LearningQA.Server.Infrasructure;
 using LearningQA.Shared.DTO;
 using LearningQA.Shared.Entities;
-using LearningQA.Shared.MediatR.Test.Command;
 using LearningQA.Shared.MediatR.TestItem.Command;
 using LearningQA.Shared.MediatR.TestItem.Query;
 
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-using ServiceResult;
 using ServiceResult.ApiExtensions;
 
 using Swashbuckle.AspNetCore.Annotations;
 
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LearningQA.Server.Controllers
 {
-	public class TestItemController : ApiControllerBase
+    public class TestItemController : ApiControllerBase
 	{
-        private const string _loadFromFilePassword = "Tyy2000@Load";
-		private readonly IOptions<LeaningConfig> _learningConfig;
-		public TestItemController(ILogger<ApiControllerBase> logger,IMediator mediator, IOptions<LeaningConfig> learningConfig , IMapper mapper) :base(logger,mediator,mapper)
+        private readonly IOptions<LeaningConfig> _learningConfig;
+        public TestItemController(ILogger<ApiControllerBase> logger,IMediator mediator, IOptions<LeaningConfig> learningConfig , IMapper mapper ) :base(logger,mediator,mapper)
 		{
 			_learningConfig = learningConfig;
+        
 		}
         //https://localhost:44335/TestItem?Category=Yossi&Subject=Pop&Chapter=1&Version=12&NumOfQuestions=50
         /// <summary>
@@ -153,106 +140,19 @@ namespace LearningQA.Server.Controllers
 			var result = await _mediator.Send(new UpdateTestItemCommand(testItem), cancellationToken);
 			return Ok(result);
 		}
+		private class DbMigration
+        {
+            LearningQAContext _dbContext;
+            public DbMigration(LearningQAContext dbContext)
+            {
+                _dbContext = dbContext;
+            }
+            public void Migrat()
+            {
+                _dbContext.Database.Migrate();
+            }
+        }
 		
-		[HttpPost(Name = "/LoadNewFromFile")]
-        [SwaggerOperation(
-            Summary = "LoadNewFromFile",
-            Description = "Load TestITem file in json format and save ti DB, can be also reset database",
-            OperationId = "TestItem.Post",
-            Tags = new[] { "TestItemEndpoint" })]
-        [SwaggerResponse((int)System.Net.HttpStatusCode.OK, "bool", typeof(bool))]
-        [SwaggerResponse((int)System.Net.HttpStatusCode.BadRequest, "string", typeof(string))]
-        public async Task<IActionResult> LoadNewFromFile(string password="" ,bool createNewDatabase = false, bool confirmCreate = false ,string fileName = "")
-		{
-            string[] filestoLoad = null;
-            if(createNewDatabase && !confirmCreate || !(password ==_loadFromFilePassword))
-            {
-               
-                return BadRequest("Input createNewDatabase == false while loadAll");
-            }
-            
-            filestoLoad = DataResourceReader.GetAllJsonFiles(fileName);
-            Person<int> person = new Person<int>()
-            {
-                IdNumber = "059828391",
-                Name = "Yosef Levy",
-                Email = "yos@gmail.com",
-                Address = "Gilon, Israel 2010300",
-                Phone = "054999888777"
-
-            };
-            BlockingCollection<List<TestItem<QUestionSql, int>>> testItemsLoader = new BlockingCollection<List<TestItem<QUestionSql, int>>>();
-            bool mode = false;
-            ICollection<ValidationResult> validationResults = new Collection<ValidationResult>();
-            var sw = Stopwatch.StartNew();
-            
-            if(mode)
-            {
-                foreach (var file in filestoLoad)
-                {
-
-                    var result = DataResourceReader.LoadJsonFullName<TestItem<QUestionSql, int>>(file);
-                    if (result == null)
-                        continue;
-                    if (result.Where(x => string.IsNullOrEmpty(x.Category) && string.IsNullOrEmpty(x.Chapter) && string.IsNullOrEmpty(x.Subject)).Any())
-                        continue;
-                    if (!ConverSupplement(result))
-                        return Ok("ConverSupplement Failed");
-                    await _mediator.Send(new CreateRangeTestItemCommand(result, person) { CreateNewDatabase = createNewDatabase }, cancellationToken);
-                    createNewDatabase = false;
-                }
-                sw.Stop();
-                Debug.WriteLine($"Without Parallel Tooks {sw.ElapsedMilliseconds}");
-            }
-            else
-            {
-               
-               
-                sw.Restart();
-                ParallelLoopResult parallelLoopResult = Parallel.ForEach(filestoLoad, file => DataResourceReader.LoadJsonFullName<TestItem<QUestionSql, int>>(file, testItemsLoader));
-                foreach (var result in testItemsLoader)
-                {
-                    //int parseResult;
-
-                    //if (result.Where(x => string.IsNullOrEmpty(x.Category) || string.IsNullOrEmpty(x.Chapter) || string.IsNullOrEmpty(x.Subject)).Any())
-                    //    continue;
-                    int previousValidationResult = validationResults.Count();
-                    result.ForEach(x => Validator.TryValidateObject(x, new System.ComponentModel.DataAnnotations.ValidationContext(x), validationResults, true));
-
-                    if (!ConverSupplement(result))
-                        validationResults.Add(new ValidationResult($"ConverSupplement failed"));
-                    if (validationResults.Count > previousValidationResult)
-                        continue;
-                    //var test = result.Where(x =>
-                    // x.Questions.Where(q => !int.TryParse(q.QuestionNumber, out parseResult)).Any()
-                    // );
-                    //if (test.Count() > 0)
-                    //{
-                    //    foreach (var item in test)
-                    //    {
-                    //        var q = item.Questions.Select(x => x.QuestionNumber).Aggregate((s1,s2) => s1 + " | " + s2);
-                    //        Debug.WriteLine($"{item.GeTestItemTitle()} question: {string.Join(" ! ", q) }");
-                    //    }
-                            
-                    //    //return Ok("Question number not valis"); 
-                    //}
-
-                    await _mediator.Send(new CreateRangeTestItemCommand(result, person) { CreateNewDatabase = createNewDatabase }, cancellationToken);
-                    createNewDatabase = false;
-                }
-                sw.Stop();
-                Debug.WriteLine($"With Parallel Tooks {sw.ElapsedMilliseconds}");
-            }
-
-
-            //var testitems = DataResourceReader.LoadJson<TestItem<QUestionSql, int>>(fileName);
-
-            //ConverSupplement(testitems);
-            //await _mediator.Send(new CreateRangeTestItemCommand(testitems,person) { CreateNewDatabase = createNewDatabase}, cancellationToken);
-            var returnMessage = new StringBuilder();
-            validationResults.ForAll(s => returnMessage.Append($"{Environment.NewLine}{s.ErrorMessage}"));
-            return Ok(returnMessage.ToString());
-		}
 
 		[HttpGet(Name = "/EmptyTestItem")]
         [SwaggerOperation(
@@ -294,73 +194,13 @@ namespace LearningQA.Server.Controllers
 			}
 			return await Task.FromResult(testItems);
 		}
-        [HttpGet(Name = "/LoadImageFromFile")]
-        public async  Task<ActionResult<string>> LoadImageFromFile( string fileName = "")
-        {
-            var image = DataResourceReader.LoadImageForDisplay(fileName);
-            return Ok(image);
-        }
+        
 
         private static List<T> CreateList<T>(int capacity)
 		{
 			return Enumerable.Repeat(default(T), capacity).ToList();
 		}
-        private bool ConverSupplement(List<TestItem<QUestionSql,int>> items)
-        {
-            try
-            {
-                for (int item = 0; item < items.Count; item++)
-                {
-                    for (int qIndex = 0; qIndex < items.ElementAt(item).Questions.Count; qIndex++)
-                    {
-                        var toRemove = items.ElementAt(item).Questions.ElementAt(qIndex).Supplements.Where(x => x.OriginalContent.IsNullOrEmpty() && x.Title.IsNullOrEmpty()).ToList();
-                        var supplement = items.ElementAt(item).Questions.ElementAt(qIndex).Supplements;
-                        toRemove.ForEach(item => supplement.Remove(item));
-                        for (int suppIndex = 0; suppIndex < supplement.Count; suppIndex++)
-                        {
-                            switch(supplement.ElementAt(suppIndex).OriginalcontentType)
-                            {
-                                case ContentType.ImageFileName:
-                                case ContentType.ImageFileNameExplain:
-                                    {
-                                        Console.WriteLine($"ConverSupplement: item:{item}, Question:{items.ElementAt(item).Questions.ElementAt(qIndex).QuestionNumber} Supp:{supplement.ElementAt(suppIndex).OriginalContent}");
-                                        var content = supplement.ElementAt(suppIndex).OriginalContent.Split(";");
-                                        if (content.Length > 0)
-                                        {
-                                            var src = content[0].Split(":")[1];
-                                            supplement.ElementAt(suppIndex).Content = DataResourceReader.LoadImageForDisplay(src);
-                                            supplement.ElementAt(suppIndex).ContentType = ContentType.ImageBase64String;
-                                        }
-
-                                    }
-                                    break;
-                            }
-                            //if (supplement.ElementAt(suppIndex).OriginalcontentType == ContentType.ImageFileName)
-                            //{
-                            //    Console.WriteLine($"ConverSupplement: item:{item}, Question:{items.ElementAt(item).Questions.ElementAt(qIndex).QuestionNumber} Supp:{supplement.ElementAt(suppIndex).OriginalContent}");
-                            //    var content = supplement.ElementAt(suppIndex).OriginalContent.Split(";");
-                            //    if (content.Length > 0)
-                            //    {
-                            //        var src = content[0].Split(":")[1];
-                            //        supplement.ElementAt(suppIndex).Content = DataResourceReader.LoadImageForDisplay(src);
-                            //        supplement.ElementAt(suppIndex).ContentType = ContentType.ImageBase64String;
-                            //    }
-
-                            //}
-                        }
-
-                    }
-                }
-                return true;
-            }
-            catch(Exception ex)
-            {
-               
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-           
-        }
+       
 	}
 
 }

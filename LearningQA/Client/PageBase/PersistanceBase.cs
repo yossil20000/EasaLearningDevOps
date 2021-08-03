@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using ObjectTExtensions;
 using System.Diagnostics;
 using LearningQA.Shared.Entities;
+using System.Reflection;
 
 namespace LearningQA.Client.PageBase
 {
@@ -91,22 +92,47 @@ namespace LearningQA.Client.PageBase
 		}
 		protected void ProcessTestItemInfo()
 		{
-			for(int i=0;i < testItemInfos.Count;i++)
+			try
 			{
-				testItemInfos[i].Category = myTI.ToTitleCase(testItemInfos[i].Category);
-				testItemInfos[i].Subject = myTI.ToTitleCase(testItemInfos[i].Subject);
-				testItemInfos[i].Chapter = myTI.ToTitleCase(testItemInfos[i].Chapter);
-			}
+				 List<TestItemInfo> itemToRemove = new List<TestItemInfo>();
+				for (int i = 0; i < testItemInfos.Count; i++)
+				{
+					if (string.IsNullOrEmpty(testItemInfos[i].Category) ||
+						string.IsNullOrEmpty(testItemInfos[i].Subject) ||
+						string.IsNullOrEmpty(testItemInfos[i].Chapter))
+						itemToRemove.Add(testItemInfos[i]);
+				}
+				foreach(var item in itemToRemove)
+				{
+					testItemInfos.Remove(item);
+				}
+				itemToRemove = null;
+				for (int i = 0; i < testItemInfos.Count; i++)
+				{
+					if (string.IsNullOrEmpty(testItemInfos[i].Category) ||
+						string.IsNullOrEmpty(testItemInfos[i].Subject) ||
+						string.IsNullOrEmpty(testItemInfos[i].Chapter))
+						continue;
+					testItemInfos[i].Category = myTI.ToTitleCase(testItemInfos[i].Category);
+					testItemInfos[i].Subject = myTI.ToTitleCase(testItemInfos[i].Subject);
+					testItemInfos[i].Chapter = myTI.ToTitleCase(testItemInfos[i].Chapter);
+				}
 
-			Categories = testItemInfos.Select(x => x.Category).Distinct().OrderBy(x => TestTitleFilter(x)).ToList();
-			
-			Console.WriteLine($"ToTitleCase: {Categories == null}");
-			
-			Subjectes = testItemInfos.Select(x => x.Subject).Distinct().OrderBy(x => TestTitleFilter(x)).ToList();
-		
-			Chapteres = testItemInfos.Select(x => x.Chapter).Distinct().OrderBy(x => TestTitleFilter(x)).ToList();
-			
-			Changed();
+				Categories = testItemInfos.Select(x => x.Category).Distinct().OrderBy(x => TestTitleFilter(x)).ToList();
+
+				Console.WriteLine($"ToTitleCase: {Categories == null}");
+
+				Subjectes = testItemInfos.Select(x => x.Subject).Distinct().OrderBy(x => TestTitleFilter(x)).ToList();
+
+				Chapteres = testItemInfos.Select(x => x.Chapter).Distinct().OrderBy(x => TestTitleFilter(x)).ToList();
+
+				Changed();
+			}
+			catch (Exception ex)
+			{
+
+				Debug.WriteLine($"Exception in {MethodInfo.GetCurrentMethod().Name} {ex.Message}");
+			}
 		}
 	}
 }
