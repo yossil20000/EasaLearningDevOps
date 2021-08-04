@@ -34,6 +34,7 @@ namespace LearningQA.Server.Controllers
         private const string _loadFromFilePassword = "Tyy2000@Load";
         private readonly LearningQAContext _dbContext;
         DataResourceReader _dataResourceReader;
+
         public LearningQADbController(DataResourceReader dataResourceReader , ILogger<LearningQADbController> logger, IMediator mediator, IOptions<LeaningConfig> learningConfig, IMapper mapper, LearningQAContext learningQAContext) : base(logger, mediator, mapper)
         {
             _dbContext = learningQAContext;

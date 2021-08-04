@@ -1,0 +1,1 @@
+Data Source=tcp:learningqadbserver.database.windows.net,1433;Initial Catalog=LearningQA.Server_db;User Id=Yossil2000@learningqadbserver;Password=Tyy2000@Azure

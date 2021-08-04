@@ -1,0 +1,1 @@
+InstrumentationKey=f10690c4-c1ca-4191-a9b7-ba1faf6a40fe;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/

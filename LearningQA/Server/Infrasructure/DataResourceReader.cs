@@ -12,6 +12,9 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Text;
+using Microsoft.AspNetCore.Hosting;
+using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace LearningQA.Server.Infrasructure
 {
@@ -20,23 +23,35 @@ namespace LearningQA.Server.Infrasructure
         private static string DataResource = "DataResource";
         private static string DefaultDirectory = "TestItem";
         private readonly ILogger _logger;
-       public DataResourceReader(ILogger<DataResourceReader> logger) { _logger = logger; }
+        IWebHostEnvironment WebHostEnvironment;
+       public DataResourceReader(ILogger<DataResourceReader> logger , IWebHostEnvironment webHostEnvironment) { _logger = logger; WebHostEnvironment = webHostEnvironment; }
         public  string[] GetAllJsonFiles( string pattern=null, string directory = "TestItems")
         {
             try
             {
-                pattern = string.IsNullOrEmpty(pattern) ? "*.json" : pattern; 
-                string filename = $@"{System.IO.Directory.GetCurrentDirectory()}\{DataResource}\{directory}";
-                _logger.LogDebug($"DataResourceReader: Json path for Files: FileName {filename} Pattern: {pattern}");
-                var files = System.IO.Directory.GetFiles(filename,pattern);
-                _logger.LogDebug($"DataResourceReader:System.IO.Directory.GetFiles: Return Count: {files.Length}");
+                pattern = string.IsNullOrEmpty(pattern) ? "*.json" : pattern;
+                //string filename = $@"{System.IO.Directory.GetCurrentDirectory()}\{DataResource}\{directory}";
+                string rootPath = WebHostEnvironment.ContentRootPath;
+                string filesDirectory = Path.Combine( DataResource, directory);// $@"{System.IO.Directory.GetCurrentDirectory()}\{DataResource}\{directory}";
+                _logger.LogDebug($"DataResourceReader: Json path for Files: filesDirectory {filesDirectory} Pattern: {pattern}");
+                //var files = System.IO.Directory.GetFiles(filename,pattern);
+                var files = WebHostEnvironment.ContentRootFileProvider.GetDirectoryContents(filesDirectory);
+                _logger.LogDebug($"DataResourceReader:System.IO.Directory.GetFiles: Return Count: {files.Count()}");
 
-                StringBuilder sb = new StringBuilder(); 
+                StringBuilder sb = new StringBuilder();
+                List<string> result = new List<string>();
                 foreach (var f in files)
                 {
-                    sb.AppendLine(f);    
+                    if (f.IsDirectory)
+                        continue;
+                    if (Regex.Match(f.Name, pattern).Success)
+                    {
+                        string fileFullPath = Path.Combine(filesDirectory, f.Name);
+                        sb.AppendLine(fileFullPath);
+                        result.Add(fileFullPath);
+                    }
                 }
-                return files;
+                return result.ToArray();
 
             }
             catch (Exception ex)
@@ -85,7 +100,15 @@ namespace LearningQA.Server.Infrasructure
             var thisAssembly = Assembly.GetExecutingAssembly();
             try
             {
-                var json = System.IO.File.ReadAllText(file);
+                //var json = System.IO.File.ReadAllText(file);
+                string json = string.Empty;
+               using( var p = WebHostEnvironment.ContentRootFileProvider.GetFileInfo(file).CreateReadStream() )
+                {
+                    using(var reader = new StreamReader(p))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                };
                 //using (StreamReader r = new StreamReader(thisAssembly.GetManifestResourceStream($"LearningQA.Server.DataResource.{file}")))
                 {
                     //var json = r.ReadToEnd();
@@ -113,13 +136,27 @@ namespace LearningQA.Server.Infrasructure
             {
                 _logger.LogDebug($"LoadImageForDisplay: file name: {filename}");
                 byte[] fileContent = null;
-                using System.IO.FileStream fs = new System.IO.FileStream(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                using System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs);
-                long byteLength = new System.IO.FileInfo(filename).Length;
+                var fileInfo = WebHostEnvironment.ContentRootFileProvider.GetFileInfo(file);
+                long byteLength = fileInfo.Length;
                 _logger.LogDebug($"LoadImageForDisplay: byteLength: {byteLength}");
-                fileContent = binaryReader.ReadBytes((Int32)byteLength);
-                imageBase64 = Convert.ToBase64String(fileContent);
-                _logger.LogDebug($"LoadImageForDisplay: converted stinr: {imageBase64}");
+                using (var p = fileInfo.CreateReadStream())
+                {
+
+                    using (var reader = new BinaryReader(p))
+                    {
+                       
+                         fileContent = reader.ReadBytes((Int32)byteLength);
+                        imageBase64 = Convert.ToBase64String(fileContent);
+                        _logger.LogDebug($"LoadImageForDisplay: converted stinr: {imageBase64}");
+                    }
+                };
+                //using System.IO.FileStream fs = new System.IO.FileStream(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                //using System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs);
+                //long byteLength = new System.IO.FileInfo(filename).Length;
+                //_logger.LogDebug($"LoadImageForDisplay: byteLength: {byteLength}");
+                //fileContent = binaryReader.ReadBytes((Int32)byteLength);
+                //imageBase64 = Convert.ToBase64String(fileContent);
+                //_logger.LogDebug($"LoadImageForDisplay: converted stinr: {imageBase64}");
             }
             catch(Exception ex)
             {
