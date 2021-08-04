@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/learningqadbserver/databases/LearningQA.Server_db",
+      "type": "mssql.azure",
+      "connectionId": "DbConfig:ConnectionString:SqlServerConnectionString",
+      "secretStore": "AzureAppSettings"
+    },
+    "appInsights1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/LeariningQAApplicationInsights",
+      "type": "appInsights.azure",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}
