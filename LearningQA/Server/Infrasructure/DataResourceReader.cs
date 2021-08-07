@@ -15,6 +15,9 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using LearningQA.Shared.Entities;
+using Castle.Core.Internal;
+using Castle.DynamicProxy.Generators.Emitters;
 
 namespace LearningQA.Server.Infrasructure
 {
@@ -27,6 +30,7 @@ namespace LearningQA.Server.Infrasructure
        public DataResourceReader(ILogger<DataResourceReader> logger , IWebHostEnvironment webHostEnvironment) { _logger = logger; WebHostEnvironment = webHostEnvironment; }
         public  string[] GetAllJsonFiles( string pattern=null, string directory = "TestItems")
         {
+            List<string> result = new List<string>();
             try
             {
                 pattern = string.IsNullOrEmpty(pattern) ? "*.json" : pattern;
@@ -39,12 +43,12 @@ namespace LearningQA.Server.Infrasructure
                 _logger.LogDebug($"DataResourceReader:System.IO.Directory.GetFiles: Return Count: {files.Count()}");
 
                 StringBuilder sb = new StringBuilder();
-                List<string> result = new List<string>();
+               
                 foreach (var f in files)
                 {
                     if (f.IsDirectory)
                         continue;
-                    if (Regex.Match(f.Name, pattern).Success)
+                    if (Regex.IsMatch(f.Name, pattern,RegexOptions.IgnoreCase))
                     {
                         string fileFullPath = Path.Combine(filesDirectory, f.Name);
                         sb.AppendLine(fileFullPath);
@@ -53,6 +57,10 @@ namespace LearningQA.Server.Infrasructure
                 }
                 return result.ToArray();
 
+            }
+            catch(System.ArgumentException ae)
+            {
+                _logger.LogError(ae.Message);
             }
             catch (Exception ex)
             {
@@ -91,7 +99,7 @@ namespace LearningQA.Server.Infrasructure
 			}
             return null;
         }
-        public  List<T> LoadJsonFullName<T>(string file,BlockingCollection<List<T>> collection = null )
+        public  List<T> LoadJsonFullName<T>(string file )
         {
             if (string.IsNullOrEmpty(file))
             {
@@ -116,7 +124,7 @@ namespace LearningQA.Server.Infrasructure
                     option.IncludeFields = true;
                     option.PropertyNameCaseInsensitive = true;
                     var items = JsonSerializer.Deserialize<List<T>>(json, option).ToList();
-                    collection?.Add(items);
+                   
                     return items;
                 }
             }
@@ -168,6 +176,104 @@ namespace LearningQA.Server.Infrasructure
                 
             }
             return imageBase64;
+        }
+
+        public bool ConverSupplement(List<TestItem<QUestionSql, int>> items)
+        {
+            try
+            {
+                //The you can add aditional info that you can put and it latter can be filter, some third party can useit
+                //Don't use string interpolation
+                _logger.LogTrace(100, "ConverSupplement: start at {time}", DateTime.UtcNow);
+                for (int item = 0; item < items.Count; item++)
+                {
+                    _logger.LogTrace($"ConverSupplement: loop on {items.ElementAt(item).GeTestItemTitle()}");
+                    for (int qIndex = 0; qIndex < items.ElementAt(item).Questions.Count; qIndex++)
+                    {
+                        var toRemove = items.ElementAt(item).Questions.ElementAt(qIndex).Supplements.Where(x => x.OriginalContent.IsNullOrEmpty() && x.Title.IsNullOrEmpty()).ToList();
+                        _logger.LogTrace($"ConverSupplement: ToRemove Count:  {toRemove.Count}");
+                        var supplement = items.ElementAt(item).Questions.ElementAt(qIndex).Supplements;
+                        _logger.LogTrace($"ConverSupplement: Supplements Count:  {supplement.Count}");
+
+                        toRemove.ForEach(item => supplement.Remove(item));
+                        for (int suppIndex = 0; suppIndex < supplement.Count; suppIndex++)
+                        {
+                            _logger.LogTrace($"ConverSupplement: Supplements After remove Count:  {supplement.Count} suppIndex: {suppIndex}");
+                            switch (supplement.ElementAt(suppIndex).OriginalcontentType)
+                            {
+                                case ContentType.ImageFileName:
+                                case ContentType.ImageFileNameExplain:
+                                    {
+                                        _logger.LogTrace($"ConverSupplement: item:{item}, Question:{items.ElementAt(item).Questions.ElementAt(qIndex).QuestionNumber} Supp:{supplement.ElementAt(suppIndex).OriginalContent}");
+                                        var content = supplement.ElementAt(suppIndex).OriginalContent.Split(";");
+                                        if (content.Length > 0)
+                                        {
+                                            var src = content[0].Split(":")[1];
+                                            var srcString = LoadImageForDisplay(src);
+                                            _logger.LogTrace($"ConverSupplement: scrString: {srcString}");
+                                            supplement.ElementAt(suppIndex).Content = srcString;
+                                            supplement.ElementAt(suppIndex).ContentType = ContentType.ImageBase64String;
+                                            _logger.LogTrace($"ConverSupplement: scrString: {supplement.ElementAt(suppIndex).Content}");
+
+                                        }
+
+                                    }
+                                    break;
+                            }
+                        }
+
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex.Message);
+                return false;
+            }
+
+        }
+
+        public string LoadAllJson(string path,out List<TestItem<QUestionSql, int>> result)
+        {
+            StringBuilder sb = new StringBuilder();
+            result = new List<TestItem<QUestionSql, int>>();
+            var jsonFiles = GetAllJsonFiles(path);
+
+            if (jsonFiles is null)
+                return sb.AppendLine("GetAllJsonFiles Return Null").ToString();
+            
+            try
+            {
+                foreach (var file in jsonFiles)
+                {
+
+                    var testItems = LoadJsonFullName<TestItem<QUestionSql, int>>(file);
+                    if (testItems == null)
+                        continue;
+                    if (testItems.Where(x => string.IsNullOrEmpty(x.Category) || string.IsNullOrEmpty(x.Chapter) || string.IsNullOrEmpty(x.Subject)).Any())
+                        continue;
+                    if (!ConverSupplement(testItems))
+                    {
+                        sb.AppendLine($"ConvertSupplement Failed  On : ");
+                    }
+                    var supp = testItems.SelectMany(x => x.Questions).Where(x => x.Supplements.Count > 0).Select(x => x.Supplements.FirstOrDefault());
+                    foreach (var s in supp)
+                    {
+                        _logger.LogTrace($"Test item supplemnts: {s.OriginalContent} {s.Content}");
+                    }
+
+                    result.AddRange(testItems);
+                    Debug.WriteLine($"Finished File{file} ");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex.Message);
+            }
+            return sb.ToString();
         }
     }
 }

@@ -3,6 +3,7 @@ using LearningQA.Shared.Entities;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using System;
@@ -42,12 +43,12 @@ namespace LearningQA.Shared.MediatR.TestItem.Command
 		{
 			try
 			{
-				if(request._person != null && request._person.Id == 0)
-				{
-					if(!dbContext.Person.Where(x => x.IdNumber == request._person.IdNumber).Any())
-						dbContext.Person.Add(request._person);
-				}
-				
+				//	if(request._person != null && request._person.Id == 0)
+				//	{
+				//		if(!dbContext.Person.Where(x => x.IdNumber == request._person.IdNumber).Any())
+				//			dbContext.Person.Add(request._person);
+				//	}
+				dbContext.Database.SetCommandTimeout(360);
 				dbContext.TestItems.AddRange(request._testItems);
 				var result = await dbContext.SaveChangesAsync();
 				return result;
