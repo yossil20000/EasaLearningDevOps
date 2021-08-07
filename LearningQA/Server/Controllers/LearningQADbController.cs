@@ -61,46 +61,49 @@ namespace LearningQA.Server.Controllers
                 _dbContext.Database.EnsureDeleted();
                 _dbContext.Database.Migrate();
             }
-            //filestoLoad = _dataResourceReader.GetAllJsonFiles(fileName);
-            //Person<int> person = new Person<int>()
-            //{
-            //    IdNumber = "059828391",
-            //    Name = "Yosef Levy",
-            //    Email = "yos@gmail.com",
-            //    Address = "Gilon, Israel 2010300",
-            //    Phone = "054999888777"
-
-            //};
-           
+                      
             ICollection<ValidationResult> validationResults = new Collection<ValidationResult>();
-            var sw = Stopwatch.StartNew();
             List<TestItem<QUestionSql, int>> filesLoaded;
-            var results = _dataResourceReader.LoadAllJson(fileName, out filesLoaded);
-            //foreach (var file in filestoLoad)
-            //{
-
-            //    //var result = _dataResourceReader.LoadJsonFullName<TestItem<QUestionSql, int>>(file);
-            //    //if (result == null)
-            //    //    continue;
-            //    //if (result.Where(x => string.IsNullOrEmpty(x.Category) || string.IsNullOrEmpty(x.Chapter) || string.IsNullOrEmpty(x.Subject)).Any())
-            //    //    continue;
-            //    //if (!_dataResourceReader.ConverSupplement(result))
-            //    //    return Ok("ConverSupplement Failed");
-            //    //var supp = result.SelectMany(x => x.Questions).Where(x => x.Supplements.Count > 0).Select(x => x.Supplements.FirstOrDefault());
-            //    //foreach (var s in supp)
-            //    //{
-            //    //    _logger.LogTrace($"Test item supplemnts: {s.OriginalContent} {s.Content}");
-            //    //}
-            //    await _mediator.Send(new CreateRangeTestItemCommand(result, null), cancellationToken);
-            //    createNewDatabase = false;
-            //    Debug.WriteLine($"Finished File{file} ");
-            //}
+            var results = await _dataResourceReader.LoadAllJsonAsync(fileName, out filesLoaded);
             await _mediator.Send(new CreateRangeTestItemCommand(filesLoaded, null), cancellationToken);
-            sw.Stop();
-            _logger.LogTrace($"Without Parallel Tooks {sw.ElapsedMilliseconds} ");
             var returnMessage = new StringBuilder();
             validationResults.ForAll(s => returnMessage.Append($"{Environment.NewLine}{s.ErrorMessage}"));
             return Ok(returnMessage.ToString());
+        }
+        [HttpPost(Name = "/WriteDataToJson")]
+        public async Task<IActionResult> WriteDataToJson(string password, string source = @"atpl_oxford\.[0-9A-Z]+\.\w+\.json", string desitnation = "")
+        {
+            if (!(password == _loadFromFilePassword) || string.IsNullOrEmpty(source) || string.IsNullOrEmpty(desitnation))
+            {
+
+                return BadRequest("Input ConvertFromJsonToBinary Arguments Not Match");
+            }
+            List<TestItem<QUestionSql, int>> filesLoaded;
+            var results = await _dataResourceReader.LoadAllJsonAsync(source, out filesLoaded);
+            var resuttSave = await _dataResourceReader.WriteDataToJsonAsync(filesLoaded, desitnation);
+            if(resuttSave)
+            {
+                return Ok($"Save To {desitnation}  Items Count: {filesLoaded?.Count}");
+            }
+            return NotFound("SaveJsonAsBinaryAsync Failed");
+
+        }
+        [HttpGet(Name = "/ReadDataFromJson")]
+        public async Task<IActionResult> ReadDataFromJson(string password, string source = "")
+        {
+            if (!(password == _loadFromFilePassword) || string.IsNullOrEmpty(source) )
+            {
+
+                return BadRequest("Input ConvertFromJsonToBinary Arguments Not Match");
+            }
+                       
+            var resultLoad = await _dataResourceReader.ReadDataFromJsonAsync(source);
+            if (resultLoad is not null)
+            {
+                return Ok(resultLoad);
+            }
+            return NotFound("SaveJsonAsBinaryAsync Failed");
+
         }
         [HttpGet(Name = "/LoadImageFromFile")]
         public  ActionResult<string> LoadImageFromFile(string fileName = "")
@@ -108,73 +111,5 @@ namespace LearningQA.Server.Controllers
             var image = _dataResourceReader.LoadImageForDisplay(fileName);
             return image;
         }
-        //private bool ConverSupplement(List<TestItem<QUestionSql, int>> items)
-        //{
-        //    try
-        //    {
-        //        //The you can add aditional info that you can put and it latter can be filter, some third party can useit
-        //        //Don't use string interpolation
-        //        _logger.LogTrace(100,"ConverSupplement: start at {time}" , DateTime.UtcNow);
-        //        for (int item = 0; item < items.Count; item++)
-        //        {
-        //            _logger.LogTrace($"ConverSupplement: loop on {items.ElementAt(item).GeTestItemTitle()}");
-        //            for (int qIndex = 0; qIndex < items.ElementAt(item).Questions.Count; qIndex++)
-        //            {
-        //                var toRemove = items.ElementAt(item).Questions.ElementAt(qIndex).Supplements.Where(x => x.OriginalContent.IsNullOrEmpty() && x.Title.IsNullOrEmpty()).ToList();
-        //                _logger.LogTrace($"ConverSupplement: ToRemove Count:  {toRemove.Count}");
-        //                var supplement = items.ElementAt(item).Questions.ElementAt(qIndex).Supplements;
-        //                _logger.LogTrace($"ConverSupplement: Supplements Count:  {supplement.Count}");
-
-        //                toRemove.ForEach(item => supplement.Remove(item));
-        //                for (int suppIndex = 0; suppIndex < supplement.Count; suppIndex++)
-        //                {
-        //                    _logger.LogTrace($"ConverSupplement: Supplements After remove Count:  {supplement.Count} suppIndex: {suppIndex}");
-        //                    switch (supplement.ElementAt(suppIndex).OriginalcontentType)
-        //                    {
-        //                        case ContentType.ImageFileName:
-        //                        case ContentType.ImageFileNameExplain:
-        //                            {
-        //                                _logger.LogTrace($"ConverSupplement: item:{item}, Question:{items.ElementAt(item).Questions.ElementAt(qIndex).QuestionNumber} Supp:{supplement.ElementAt(suppIndex).OriginalContent}");
-        //                                var content = supplement.ElementAt(suppIndex).OriginalContent.Split(";");
-        //                                if (content.Length > 0)
-        //                                {
-        //                                    var src = content[0].Split(":")[1];
-        //                                    var srcString = _dataResourceReader.LoadImageForDisplay(src);
-        //                                    _logger.LogTrace($"ConverSupplement: scrString: {srcString}");
-        //                                    supplement.ElementAt(suppIndex).Content = srcString;
-        //                                    supplement.ElementAt(suppIndex).ContentType = ContentType.ImageBase64String;
-        //                                    _logger.LogTrace($"ConverSupplement: scrString: {supplement.ElementAt(suppIndex).Content}");
-
-        //                                }
-
-        //                            }
-        //                            break;
-        //                    }
-        //                    //if (supplement.ElementAt(suppIndex).OriginalcontentType == ContentType.ImageFileName)
-        //                    //{
-        //                    //    Console.WriteLine($"ConverSupplement: item:{item}, Question:{items.ElementAt(item).Questions.ElementAt(qIndex).QuestionNumber} Supp:{supplement.ElementAt(suppIndex).OriginalContent}");
-        //                    //    var content = supplement.ElementAt(suppIndex).OriginalContent.Split(";");
-        //                    //    if (content.Length > 0)
-        //                    //    {
-        //                    //        var src = content[0].Split(":")[1];
-        //                    //        supplement.ElementAt(suppIndex).Content = DataResourceReader.LoadImageForDisplay(src);
-        //                    //        supplement.ElementAt(suppIndex).ContentType = ContentType.ImageBase64String;
-        //                    //    }
-
-        //                    //}
-        //                }
-
-        //            }
-        //        }
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        _logger.LogError(ex.Message);
-        //        return false;
-        //    }
-
-        //}
     }
 }

@@ -18,16 +18,80 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using LearningQA.Shared.Entities;
 using Castle.Core.Internal;
 using Castle.DynamicProxy.Generators.Emitters;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace LearningQA.Server.Infrasructure
 {
 	public  class DataResourceReader
 	{
         private static string DataResource = "DataResource";
-        private static string DefaultDirectory = "TestItem";
+        private static string DefaultDirectory = "TestItems";
         private readonly ILogger _logger;
         IWebHostEnvironment WebHostEnvironment;
        public DataResourceReader(ILogger<DataResourceReader> logger , IWebHostEnvironment webHostEnvironment) { _logger = logger; WebHostEnvironment = webHostEnvironment; }
+        public async Task<bool> WriteDataToJsonAsync(List<TestItem<QUestionSql, int>> items , string desintation)
+        {
+            try
+            {
+
+                string rootPath = WebHostEnvironment.ContentRootPath;
+                string destinationfile = Path.Combine(DataResource, DefaultDirectory, desintation);
+
+                using (var writer = new FileStream(destinationfile, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    if (writer is not null)
+                    {
+                        //var binaryWriter = new BinaryFormatter();
+                        //binaryWriter.Serialize(serializationStream: writer, items);
+                        var jsonFormat = JsonSerializer.Serialize(items);
+                       using(var textWriter = new StreamWriter(writer))
+                        {
+                            await textWriter.WriteAsync(jsonFormat);
+                        }
+                        return await Task.FromResult(true);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            return await Task.FromResult(false);
+        }
+        public async Task<List<TestItem<QUestionSql, int>>> ReadDataFromJsonAsync( string desintation)
+        {
+            try
+            {
+
+                string rootPath = WebHostEnvironment.ContentRootPath;
+                string destinationfile = Path.Combine(DataResource, DefaultDirectory, desintation);
+
+                using (var reader = new FileStream(destinationfile, FileMode.Open, FileAccess.Read))
+                {
+                    if (reader is not null)
+                    {
+                        //var binaryWriter = new BinaryFormatter();
+                        //binaryWriter.Serialize(serializationStream: writer, items);
+                        
+                        using (var textReader = new StreamReader(reader))
+                        {
+                            int streamLenght = (int)reader.Length;
+                            char[] json = new char[streamLenght];
+
+                            var nextChar = await textReader.ReadAsync(json, 0,streamLenght);
+                            var jsonFormat = JsonSerializer.Deserialize<List<TestItem<QUestionSql, int>>>(json);
+                            return await Task.FromResult(jsonFormat);
+                        }
+                       
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            return await Task.FromResult(new List<TestItem<QUestionSql, int>>());
+        }
         public  string[] GetAllJsonFiles( string pattern=null, string directory = "TestItems")
         {
             List<string> result = new List<string>();
@@ -235,14 +299,14 @@ namespace LearningQA.Server.Infrasructure
 
         }
 
-        public string LoadAllJson(string path,out List<TestItem<QUestionSql, int>> result)
+        public  Task<string> LoadAllJsonAsync(string path,out List<TestItem<QUestionSql, int>> result)
         {
             StringBuilder sb = new StringBuilder();
             result = new List<TestItem<QUestionSql, int>>();
             var jsonFiles = GetAllJsonFiles(path);
 
             if (jsonFiles is null)
-                return sb.AppendLine("GetAllJsonFiles Return Null").ToString();
+                return Task.FromResult(sb.AppendLine("GetAllJsonFiles Return Null").ToString());
             
             try
             {
@@ -273,7 +337,7 @@ namespace LearningQA.Server.Infrasructure
 
                 _logger.LogError(ex.Message);
             }
-            return sb.ToString();
+            return Task.FromResult(sb.ToString());
         }
     }
 }
