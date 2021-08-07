@@ -16,7 +16,18 @@
         "isActive": true,
         "answerType": 0,
         "answerExplain": "",
-        "supplements": [],
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Figure 2.4",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.6\\Figure.6.10P.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
         "options": [
           {
             "id": 0,
@@ -52,7 +63,18 @@
         "isActive": true,
         "answerType": 0,
         "answerExplain": "",
-        "supplements": [],
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Figure 2.4",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.6\\Figure.6.10P.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
         "options": [
           {
             "id": 0,
@@ -88,7 +110,18 @@
         "isActive": true,
         "answerType": 0,
         "answerExplain": "",
-        "supplements": [],
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Figure 2.4",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.6\\Figure.6.10P.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
         "options": [
           {
             "id": 0,
@@ -124,7 +157,18 @@
         "isActive": true,
         "answerType": 0,
         "answerExplain": "",
-        "supplements": [],
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Figure 2.4",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.6\\Figure.6.10P.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
         "options": [
           {
             "id": 0,
@@ -160,7 +204,18 @@
         "isActive": true,
         "answerType": 0,
         "answerExplain": "",
-        "supplements": [],
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Figure 2.4",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.6\\Figure.6.10P.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
         "options": [
           {
             "id": 0,
@@ -196,7 +251,18 @@
         "isActive": true,
         "answerType": 0,
         "answerExplain": "",
-        "supplements": [],
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Figure 2.4",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.6\\Figure.6.10P.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
         "options": [
           {
             "id": 0,
@@ -232,7 +298,18 @@
         "isActive": true,
         "answerType": 0,
         "answerExplain": "",
-        "supplements": [],
+        "supplements": [
+          {
+            "id": 0,
+			"title": "Figure 2.4",
+            "tenantId": null,
+            "content": null,
+            "rotateContent": 0,
+            "originalContent": "src-relative:DataResource\\TestItems\\ATPL_OXFORD.6\\Figure.6.10P.JPG;",
+            "originalcontentType": 2,
+            "contentType": 0
+          }
+        ],
         "options": [
           {
             "id": 0,
