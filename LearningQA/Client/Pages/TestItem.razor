@@ -159,7 +159,7 @@
             <div id="container_supplement" class=@($"{(supplementFullExpand ? "toggle-full" : "toggle-full active")}") @onclick="OnSupplementFullExpandToggle"></div>
             <button @onclick="ClearCanvas">Clear</button>
             <button @onclick="NewLine">New Line</button>
-            @if (ViewModelPersist.SelectedQuestion != null && ViewModelPersist.SelectedQuestion.Supplements != null)
+            @if (ViewModelPersist?.SelectedQuestion != null && ViewModelPersist.SelectedQuestion?.Supplements != null)
             {
                     @for (var supp =0; supp < ViewModelPersist.SelectedQuestion.Supplements.Count();supp++)
                 {
@@ -169,17 +169,25 @@
             }
 
         </div>
-        @if (ViewModelPersist.SelectedQuestion != null && ViewModelPersist.SelectedQuestion.Supplements != null)
+        @if (ViewModelPersist != null )
         {
-            
-            @if(ViewModelPersist.SelectedSupplement != null && RenderSupp())
+            if(ViewModelPersist.SelectedQuestion != null )
             {
-                <div class="content" style="position:relative">
-                    <img id="canvasImgTestItem" @onchange="OnImageDoubleClick" class=@(ViewModelPersist.SelectedSupplement.RotateContent == 0  ? "contain" :  $"contain rotate90") src=@($"data:image/jpeg;base64,{ViewModelPersist.SelectedSupplement.Content}") alt="base64 test" style="width:100%; display:none">
-                    <canvas id="canvasTestItem" class="canvas" @onmousemove="@(eventArg => CanvasOnMoseMove(eventArg) )" @onmousedown="@(eventArg => CanvasMousedown(eventArg) )" @onmouseup="@(eventArg => CanvasMouseUp(eventArg) )"></canvas>
-                </div>
-
+                    if(ViewModelPersist.SelectedSupplement != null )
+                    {
+                        
+                            if(ViewModelPersist.SelectedSupplement?.Content != null)
+                        {
+                                <div class="content" style="position:relative">
+                            <img id="canvasImgTestItem" @onchange="OnImageDoubleClick" class=@(ViewModelPersist.SelectedSupplement?.RotateContent == 0  ? "contain" :  $"contain rotate90") src=@($"data:image/jpeg;base64,{ViewModelPersist.SelectedSupplement.Content}") alt="base64 test" style="width:100%; display:none">
+                            @*<canvas id="canvasTestItem" class="canvas" @onmousemove="@(eventArg => CanvasOnMoseMove(eventArg) )" @onmousedown="@(eventArg => CanvasMousedown(eventArg) )" @onmouseup="@(eventArg => CanvasMouseUp(eventArg) )"></canvas>*@
+                            <canvas id="canvasTestItem" class="canvas" style="background-color:yellow" ></canvas>
+                        </div>
+                        bCanInitCanvas = true;        
+                        }
+                    }
             }
+
         }
 
 
@@ -227,6 +235,7 @@
 
 @code {
     string border = "border-style: solid; border-width: 1px;";
+    bool bCanInitCanvas = false;
     private async Task OnImageDoubleClick()
     {
         try

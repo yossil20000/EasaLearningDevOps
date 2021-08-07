@@ -122,7 +122,7 @@
                 </ul>
             </div>
         </aside>
-        <div class=@($"test-item__container_supplement {(supplementExpand ? "" : "expande")} bg-color-8 color-2") style=@($"{border}")>
+ @*       <div class=@($"test-item__container_supplement {(supplementExpand ? "" : "expande")} bg-color-8 color-2") style=@($"{border}")>
             <div id="container_supplement" class=@($"{(supplementExpand ? "toggle" : "toggle active")}") @onclick="OnSupplementExpandToggle">
 
             </div>
@@ -136,7 +136,7 @@
                     }
                 }
             }
-        </div>
+        </div>*@
         @*container_supplement*@
         <div class=@($"test-item__container_supplement {(supplementExpand ? "" : "expande")} {(supplementFullExpand ? "" : "full-expande")} bg-color-8 color-2") style=@($"{border}") >
             <div class="operation">

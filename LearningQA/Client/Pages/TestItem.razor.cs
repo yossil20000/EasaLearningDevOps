@@ -58,6 +58,11 @@ namespace LearningQA.Client.Pages
 			await personInfoModel.InitializeAsync();
 			IsInitialize = true;
 			await base.OnInitializedAsync();
+			personInfoPersist.OnChanged(OnPersonalInfoChanged);
+
+		}
+		private void OnPersonalInfoChanged()
+		{
 			StateHasChanged();
 		}
 		protected override  async Task OnParametersSetAsync()
@@ -79,11 +84,17 @@ namespace LearningQA.Client.Pages
 		}
 		protected override async Task OnAfterRenderAsync(bool firstRender)
 		{
-			if(bImageChanged && canvasClassJsInterop != null)
+			await base.OnAfterRenderAsync(firstRender);
+			if (bRenderSupp == false && bCanInitCanvas == true)
+			{
+				RenderSupp().GetAwaiter();
+			}
+			if (bImageChanged && canvasClassJsInterop != null)
 			{
 				
 				_ = await canvasClassJsInterop.UpdateImage("canvasTestItem", "canvasImgTestItem");
 				bImageChanged = false;
+				ViewModelPersist.OnChanged(UpdateImage);
 			}
 		}
 		private async Task ShowMessage()
@@ -96,16 +107,17 @@ namespace LearningQA.Client.Pages
 			StateHasChanged();
 			
 		}
-		private bool RenderSupp(bool bRenderAlways = false)
+		private async Task<bool> RenderSupp(bool bRenderAlways = false)
 		{
 			if (canvasClassJsInterop != null && (bRenderSupp == false || bRenderAlways))
 			{
-				_ = canvasClassJsInterop.InitCanvas("canvasTestItem", "canvasImgTestItem");
+				_ = await canvasClassJsInterop.InitCanvas("canvasTestItem", "canvasImgTestItem");
 				bRenderSupp = true;
 				ViewModelPersist.OnChanged(UpdateImage);
+				return true;
 			}
 				
-			return true;
+			return false;
 		}
 		private void OnAnswerExpandToggle()
 		{
