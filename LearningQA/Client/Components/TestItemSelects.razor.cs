@@ -14,7 +14,7 @@ namespace LearningQA.Client.Components
 	{
 
 		[Parameter]
-		public IViewPersistanceBase TestItemViewModelPersist { get; set; }
+		public IViewPersistanceBase ViewModelPersist { get; set; }
 		[Parameter] public EventCallback OnLoadCommand { get; set; }
 		[Parameter] public EventCallback<int> OnVerify { get; set; }
 		[Parameter] public string  ButtonTitle {get;set;}
@@ -33,7 +33,7 @@ namespace LearningQA.Client.Components
 		{
 			if(!IsRegistered)
 			{
-				TestItemViewModelPersist.OnChanged(() => base.StateHasChanged());
+				ViewModelPersist.OnChanged(() => base.StateHasChanged());
 				IsRegistered = true;
 			}
 			base.OnAfterRender(firstRender);
@@ -47,7 +47,7 @@ namespace LearningQA.Client.Components
 		public void Dispose()
 		{
 			if (IsRegistered)
-				TestItemViewModelPersist.OnUnChanged(() => base.StateHasChanged());
+				ViewModelPersist.OnUnChanged(() => base.StateHasChanged());
 		}
 	}
 }

@@ -99,6 +99,8 @@ namespace LearningQA.Client.ViewModel
 			var testItemInfo = await testItemModel.RetriveTestItemInfo(result.Test.TestItemId);
 			if (testItemInfo != null)
 			{
+				
+				
 				ExamViewModelPersist.SelectedCategory = testItemInfo.Category;
 				ExamViewModelPersist.SelectedSubjecte = testItemInfo.Subject;
 				ExamViewModelPersist.SelectedChapter = testItemInfo.Chapter;

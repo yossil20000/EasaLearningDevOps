@@ -1,10 +1,10 @@
 ﻿
 
    
-        <InputSelect   class="test-item__container_selection_ss1 bg-color-6 color-2" style="outline: none;" @bind-Value="TestItemViewModelPersist.SelectedCategory">
+        <InputSelect   class="test-item__container_selection_ss1 bg-color-6 color-2" style="outline: none;" @bind-Value="ViewModelPersist.SelectedCategory">
             <option value="">--select-category</option>
 
-            @foreach (string value in TestItemViewModelPersist.Categories)
+            @foreach (string value in ViewModelPersist.Categories)
             {
 
                 <option>@value</option>
@@ -13,10 +13,10 @@
     
    
    
-        <InputSelect  class="ss2 bg-color-6 color-2" style="outline: none;" @bind-Value="TestItemViewModelPersist.SelectedSubjecte" >
+        <InputSelect  class="ss2 bg-color-6 color-2" style="outline: none;" @bind-Value="ViewModelPersist.SelectedSubjecte" >
 
             <option value="">--select-subject</option>
-            @foreach (string value in TestItemViewModelPersist.Subjectes)
+            @foreach (string value in ViewModelPersist.Subjectes)
             {
 
                 <option>@value</option>
@@ -24,9 +24,9 @@
         </InputSelect>
    
     
-        <InputSelect class="test-item__container_selection_ss3 bg-color-6 color-2" style="outline: none;"  @bind-Value="TestItemViewModelPersist.SelectedChapter">
+        <InputSelect class="test-item__container_selection_ss3 bg-color-6 color-2" style="outline: none;"  @bind-Value="ViewModelPersist.SelectedChapter">
             <option value="">--select-chapter</option>
-            @foreach (string value in TestItemViewModelPersist.Chapteres)
+            @foreach (string value in ViewModelPersist.Chapteres)
             {
 
                 <option>@value</option>
@@ -37,5 +37,9 @@
         
         <button class="ss4 bg-color-6 color-2" @onclick="@(() => OnLoadCommand.InvokeAsync())">@ButtonTitle</button>
     
+@code{
+    [Parameter] public bool ClearSelection { get; set; }
+    string selectDefault = "";
 
+}
       
