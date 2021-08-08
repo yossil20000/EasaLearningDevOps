@@ -11,8 +11,8 @@ namespace LearningQA.Shared.Entities
 	public class Preferance<Tdb> : IPreferance<Tdb>
 	{
 		public Tdb? Id { get; set; }
-		public int Theme { get; set; }
-		public int HUE { get; set; } 
+		public int Theme { get; set; } = 42;
+		public int HUE { get; set; } = 60;
 
 	}
 }

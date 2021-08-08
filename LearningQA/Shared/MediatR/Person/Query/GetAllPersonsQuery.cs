@@ -34,7 +34,7 @@ namespace LearningQA.Shared.MediatR.Person.Query
 		{
 			try
 			{
-				var result = await dbContext.Person.AsNoTracking().ToArrayAsync();
+				var result = await dbContext.Person.AsNoTracking().Include(x => x.Preferance).ToArrayAsync();
 				PersonInfoDto[] personInfoDto = new PersonInfoDto[result.Count()];
 				for(var i=0; i < result.Count();i++)
 				{
@@ -46,7 +46,8 @@ namespace LearningQA.Shared.MediatR.Person.Query
 						Email = result[i].Email,
 						Phone = result[i].Phone,
 						Address = result[i].Address,
-						Password = result[i].Password
+						Password = result[i].Password,
+						Preferance = result[i].Preferance ?? new Preferance<int>()
 					};
 					personInfoDto[i] = p;
 				}
