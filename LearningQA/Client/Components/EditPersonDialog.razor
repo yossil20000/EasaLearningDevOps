@@ -4,32 +4,42 @@
 <a @onclick="OnShow" class="ml-md-auto bg-color-7 color-2">Persons</a>
 @if (Show && PersonInfoPersist.Persons != null &&  PersonInfoPersist.SelectedPerson != null )
 {
-
+	 
 	<div class="modal" style="display:block;">
 	 <div class="modal-dialog">
 	  <div class="modal-content">
 	   <div class="modal-header">
-		<h4 class="modal-title">Person Editor For </h4>
-		<button type="button" class="close" @onclick="@ModalClose">&times;</button>
+		<h4 class="modal-title color-3">Person Editor</h4>
+		<button type="button" class="close color-4" @onclick="@ModalClose">&times;</button>
 	   </div>
-	   <UserSelect OnSelectionChange="OnSelectionChanged" SelectedPerson="PersonInfoPersist.SelectedPerson" Persons="PersonInfoPersist.Persons"  />
-	   <div class="modal-body">
+	   
+	   
+	   <div class="modal-body color-6">
 		<EditForm Model="Person" OnValidSubmit="ModalOk" OnInvalidSubmit="HandleInvakidSubmit" >
 		 <DataAnnotationsValidator />
 		 <ValidationSummary/>
-		 <p><label>IdNumber:</label></p>
-		 <p><InputText @bind-Value=Person.IdNumber /></p>
-		 <p><label>Name:</label></p>
-		 <p> <InputText @bind-Value="Person.Name" /></p>>
-		 <p><label>Phone:</label></p><p> <InputText @bind-Value="Person.Phone" /></p>
-		 <p><label>Address: </label></p><p><InputText @bind-Value="Person.Address" /></p>
-		 <p><label>Email: </label></p><p><InputText @bind-Value="Person.Email" /></p>
-		 <p><label>Password: </label></p><p><InputText @bind-Value="Person.Password" /></p>
-		 <p><button type="submit" class="btn btn-primary" >Save</button></p>
+		<div style="display:flex;flex-direction:row;align-items:center">
+		<button type="button" class="btn  btn-outline-light color-4" @onclick="ModalAdd">Add</button>
+	<UserSelect OnSelectionChange="OnSelectionChanged" SelectedPerson="PersonInfoPersist.SelectedPerson" Persons="PersonInfoPersist.Persons"  />
+</div> 
+<hr />
+		<p><label>IdNumber: </label></p>
+		 <p><InputText @bind-Value=Person.IdNumber style="width:100%" /></p>
+		 <p><label>Name: </label></p>
+		 <p> <InputText @bind-Value="Person.Name" style="width:100%" /></p>
+		 <p><label>Phone: </label></p><p> <InputText @bind-Value="Person.Phone" style="width:100%" /></p>
+		 <p><label>Address: </label></p><p><InputText @bind-Value="Person.Address" style="width:100%" /></p>
+		 <p><label>Email: </label></p><p><InputText @bind-Value="Person.Email" style="width:100%" /></p>
+		 <p><label>Password: </label></p><p><InputText @bind-Value="Person.Password" style="width:100%" /></p>
+		 <p><lable>Preferance: </lable></p>
+		 <ul>
+			<li><p><lable>Theme: </lable></p><p><InputNumber @bind-Value="PersonInfoPersist.SelectedPerson.Preferance.Theme" style="width:100%"/></p></li>
+			<li><p><lable>HUE: </lable></p><p>HUE<InputNumber @bind-Value="PersonInfoPersist.SelectedPerson.Preferance.HUE" style="width:100%"/></p></li>
+		</ul>
 		 <div class="modal-footer">
-		<button type="button" class="btn btn-alert" @onclick="ModalAdd">Add</button>
 		
-		<button type="button" class="btn btn-secondary" @onclick="@ModalClose">Cancel</button>
+		<button type="submit" class="btn btn-outline-light color-4" >Save</button>
+		<button type="button" class="btn btn-outline-light color-4" @onclick="@ModalClose">Cancel</button>
 	   </div>
 		</EditForm>
 

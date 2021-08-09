@@ -2,7 +2,8 @@
 @inject IPersonInfoPersist personInfoPersist
 @if(Persons is not null)
 {
-    <select class="bg-color3 color-8" style="width:100%;margin: 2px 0px 2px 2px;min-width: 0;height: 100%;"  @onchange="OnSelectionChanged">
+   
+    <select class="bg-color3 color-4" style="width:100%;margin: 2px 0px 2px 2px;min-width: 0;height: 100%;"  @onchange="OnSelectionChanged">
     @if (@*SelectedPerson is not null*@    true)
         {
             @if (EnableAll)
@@ -14,8 +15,7 @@
             <option value="@person.Id">@person.Name</option>
         }
     }
-   
-    </select>
+    </select>        
 }
 @code {
     [Parameter] public List<PersonInfoDto> Persons {get;set;}
